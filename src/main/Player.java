@@ -26,12 +26,18 @@ public class Player {
     
     public void win(int amount){ this.moneyLimit += amount; }
     
-    public boolean isAbleToPlay(){ return this.moneyLimit > 0; }
+    public boolean isAbleToPlay(){ return this.moneyLimit > 0 || this.hand.isEmpty(); }
+
+    public List<Card> getHand(){ return this.hand; }
+
+    public int getMoneyLimit(){ return this.moneyLimit; }
+
+    public PokerHand getPokerHand(){ return this.pokerHand; }
 
     public boolean receiveCard(Card card){
         if(this.hand.size() >= 2){ return false; }
         if(this.hand.size() == 1){ this.isPair = ( card.equals(this.hand.get(0)) ); }
-        if(this.isPair) { this.pokerHand = new TwoPair(); }
+        if(this.isPair) { this.pokerHand = new TwoPair(this.hand);}
         return this.hand.add(card);
     }
 
@@ -43,5 +49,10 @@ public class Player {
     public int bet(int amount){
         this.moneyLimit -= amount;
         return this.moneyLimit;
+    }
+
+    @Override
+    public String toString(){
+        return this.name;
     }
 }
