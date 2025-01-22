@@ -183,4 +183,19 @@ class Game{
         Game game = new Game();
         game.start();
     }
+
+    /*
+    Poker Hands Ranked in order:
+
+    Royal Flush
+    Straight Flush
+    Quad
+    Full House
+    Flush
+    Straight
+    Triple
+    Two Pair
+    Single Pair
+    High Card
+     */
 }

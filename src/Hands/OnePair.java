@@ -20,6 +20,11 @@ public class OnePair implements PokerHand{
     }
 
     @Override
+    public List<Card> getHandCards() {
+        return this.onePair;
+    }
+
+    @Override
     public String getHandName() {
         return "One Pair";
     }

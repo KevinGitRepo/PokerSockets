@@ -15,7 +15,7 @@ public class DealerFiveCards implements HandIdentifier {
     }
 
     @Override
-    public void checkHand(Player player, List<Card> dealersHand) {
+    public boolean checkHand(Player player, List<Card> dealersHand) {
         /*
         Hands to check:
         OnePair
@@ -28,5 +28,6 @@ public class DealerFiveCards implements HandIdentifier {
         Straight
         StraightFlush
          */
+        return true;
     }
 }

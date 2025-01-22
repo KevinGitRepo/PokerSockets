@@ -20,6 +20,11 @@ public class StraightFlush implements PokerHand{
     }
 
     @Override
+    public List<Card> getHandCards() {
+        return this.straightFlush;
+    }
+
+    @Override
     public String getHandName() {
         return "Straight Flush";
     }

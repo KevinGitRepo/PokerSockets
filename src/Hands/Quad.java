@@ -20,6 +20,11 @@ public class Quad implements PokerHand{
     }
 
     @Override
+    public List<Card> getHandCards() {
+        return this.quad;
+    }
+
+    @Override
     public String getHandName() {
         return "Quad";
     }

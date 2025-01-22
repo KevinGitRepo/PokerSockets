@@ -20,6 +20,11 @@ public class Straight implements PokerHand{
     }
 
     @Override
+    public List<Card> getHandCards() {
+        return this.straight;
+    }
+
+    @Override
     public String getHandName() {
         return "Straight";
     }

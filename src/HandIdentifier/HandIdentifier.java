@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface HandIdentifier {
 
-    public void checkHand(Player player, List<Card> dealersHand);
+    public boolean checkHand(Player player, List<Card> dealersHand);
 }

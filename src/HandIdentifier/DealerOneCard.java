@@ -18,37 +18,46 @@ public class DealerOneCard implements HandIdentifier {
     }
 
     @Override
-    public void checkHand(Player player, List<Card> dealersHand) {
+    public boolean checkHand(Player player, List<Card> dealersHand) {
         // Have to check larger hands first
         // Check single pair
         // Check triple pair iff single pair was confirmed
 
-        if(player.getPokerHand() != null && player.getPokerHand().getHandName().equals("One Pair")){
-            checkTriple(player, dealersHand);
+        boolean returnValue = false;
+
+        if(player.getPokerHand() == null){
+            return returnValue;
         }
 
-        checkSinglePair(player, dealersHand);
+        if(player.getPokerHand().getHandName().equals("One Pair")){
+            returnValue = checkTriple(player, dealersHand);
+        }else{
+            returnValue = checkSinglePair(player, dealersHand);
+        }
 
         clearList();
+        return returnValue;
     }
 
-    private void checkSinglePair(Player player, List<Card> dealersHand) {
-        for(Card card : player.getHand()){
-            if(card.equals(dealersHand.getFirst())){
-                this.mergedList.add(card);
-                this.mergedList.add(dealersHand.getFirst());
-                player.setPokerHand(this.connectorManager.sendForHand("One Pair", this.mergedList));
-                break;
-            }
+    private boolean checkSinglePair(Player player, List<Card> dealersHand) {
+        int index = player.getHand().indexOf(dealersHand.getFirst());
+        if(index != -1){
+            this.mergedList.add(player.getHand().get(index));
+            this.mergedList.add(dealersHand.getFirst());
+            player.setPokerHand(this.connectorManager.sendForHand("One Pair", this.mergedList));
+            return true;
         }
+        return false;
     }
 
-    private void checkTriple(Player player, List<Card> dealersHand) {
+    private boolean checkTriple(Player player, List<Card> dealersHand) {
         if(player.getHand().getFirst().equals(dealersHand.getFirst())){
             this.mergedList.addAll(dealersHand);
             this.mergedList.addAll(player.getHand());
             player.setPokerHand(this.connectorManager.sendForHand("Triple", this.mergedList));
+            return true;
         }
+        return false;
     }
 
     private void clearList(){

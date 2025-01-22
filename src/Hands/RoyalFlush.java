@@ -20,6 +20,11 @@ public class RoyalFlush implements PokerHand{
     }
 
     @Override
+    public List<Card> getHandCards() {
+        return this.royalFlush;
+    }
+
+    @Override
     public String getHandName() {
         return "Royal Flush";
     }

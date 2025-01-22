@@ -19,6 +19,11 @@ public class Flush implements PokerHand {
     }
 
     @Override
+    public List<Card> getHandCards() {
+        return this.flush;
+    }
+
+    @Override
     public String getHandName() {
         return "Flush";
     }

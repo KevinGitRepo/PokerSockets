@@ -4,7 +4,7 @@ public class Card {
     
     private final String suit; // clubs, spades, hearts, diamonds
     private final int value; // 2-14
-    private final String face; // 2-10, Jack, Queen, King
+    private final String face; // 2-10, Jack, Queen, King, Ace
 
     /**
      * Creates Card object which represents a real card
@@ -48,12 +48,14 @@ public class Card {
      * @return true if objects are equal, false otherwise
      */
     @Override
-    public boolean equals(Object card){
-        if(card == this){ return true; }
-        if(card == null || card.getClass() != getClass()){
+    public boolean equals(Object card) {
+        if (card == this) {
+            return true;
+        }
+        if (card == null || card.getClass() != getClass()) {
             return false;
         }
-        Card thisCard = (Card)card;
+        Card thisCard = (Card) card;
         return thisCard.getCardSuit().equals(this.suit) && thisCard.getCardFace().equals(this.face) && thisCard.getCardValue() == this.value;
     }
 

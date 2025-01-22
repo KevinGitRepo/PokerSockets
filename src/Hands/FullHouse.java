@@ -20,6 +20,11 @@ public class FullHouse implements PokerHand{
     }
 
     @Override
+    public List<Card> getHandCards() {
+        return this.fullHouse;
+    }
+
+    @Override
     public String getHandName() {
         return "Full House";
     }

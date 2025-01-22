@@ -20,6 +20,11 @@ public class Triple implements PokerHand{
     }
 
     @Override
+    public List<Card> getHandCards() {
+        return this.triple;
+    }
+
+    @Override
     public String getHandName() {
         return "Triple";
     }
