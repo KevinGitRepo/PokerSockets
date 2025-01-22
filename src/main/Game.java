@@ -1,8 +1,8 @@
 package main;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import HandIdentifier.*;
+
+import java.util.*;
 
 class Game{
 
@@ -10,12 +10,17 @@ class Game{
     private int pot;
     private List<Player> players;
     private Scanner scan;
+    private final HandIdentifierManager handIdentifierManager = new HandIdentifierManager();
 
-    // Main game function
-    public void start(){
+    private void initializeGlobalVariables(){
         this.dealerCards = new ArrayList<>();
         this.players = new ArrayList<Player>();
         this.scan = new Scanner(System.in);
+    }
+
+    // Main game function
+    public void start(){
+        initializeGlobalVariables();
 
         Deck deck = new Deck();
 
@@ -53,9 +58,15 @@ class Game{
                 int currentBet = 0;
 
                 // Round Game Loop
-                for(Player player : remainingPlayers){
+                for(Player player : this.players){
+
+                    // Continues if player is not a remaining player (Need to check for folding cases)
+                    if(!remainingPlayers.contains(player)){
+                        continue;
+                    }
+
                     // Removes any player without sufficient balance to play
-                    if(!player.isAbleToPlay()){
+                    if(!player.isAbleToPlay() && remainingPlayers.contains(player)){
                         remainingPlayers.remove(player);
                         continue;
                     }
@@ -80,9 +91,14 @@ class Game{
                         }
                         // Check case
                         case "c" -> {
+                            if(currentBet > 0){
+                                System.out.println("You need to bet at least $" + currentBet);
+                            }
                             continue;
                         }
                     }
+                    // Checks the players hand to identify which type they have
+                    checkPlayerHand(player);
                 }
 
                 // Need to check if the game needs to be reset or if it can continue
@@ -93,6 +109,15 @@ class Game{
             }
         }
         System.out.println("Thanks for playing!");
+    }
+
+    /**
+     * Uses a hashmap of objects to check to see if the player currently has a certain hand.
+     * This will only check the possible hands given the amount of cards in play
+     * @param player who will have their cards checked
+     */
+    private void checkPlayerHand(Player player){
+        this.handIdentifierManager.checkHand(player, this.dealerCards);
     }
 
     /**

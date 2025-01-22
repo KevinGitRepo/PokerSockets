@@ -3,26 +3,40 @@ package main;
 import Hands.PokerHand;
 import Hands.TwoPair;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Player {
-    
     private final String name;
     private int moneyLimit;
     private List<Card> hand;
     private boolean isPair;
     private PokerHand pokerHand;
+    private List<String> possibleHands;
 
     public Player(String name, int moneyLimit){
         this.name = name;
         this.moneyLimit = moneyLimit;
         this.hand = new ArrayList<>();
         this.isPair = false;
+        this.possibleHands = new ArrayList<>();
     }
 
     public String getName(){ return this.name; }
+
+    public void addPossibleHands(List<String> possibleHands){
+        this.possibleHands.addAll(possibleHands);
+    }
+
+    public void removePossibleHand(String possibleHand){
+        this.possibleHands.remove(possibleHand);
+    }
     
-    public List<Card> fold(){ return this.hand; }
+    public void fold(){
+        this.hand.clear();
+        this.possibleHands.clear();
+    }
     
     public void win(int amount){ this.moneyLimit += amount; }
     
