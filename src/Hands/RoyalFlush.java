@@ -19,6 +19,11 @@ public class RoyalFlush implements PokerHand{
         }
     }
 
+    @Override
+    public String getHandName() {
+        return "Royal Flush";
+    }
+
     /**
      * Adds cards in royal flush together and adds predetermined hand amount to the total.
      * @return total amount the royal flush is worth

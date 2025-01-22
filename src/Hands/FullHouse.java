@@ -19,6 +19,11 @@ public class FullHouse implements PokerHand{
         }
     }
 
+    @Override
+    public String getHandName() {
+        return "Full House";
+    }
+
     /**
      * Adds cards in full house together and adds predetermined hand amount to the total
      * @return total amount the full house is worth

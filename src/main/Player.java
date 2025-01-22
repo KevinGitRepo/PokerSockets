@@ -48,9 +48,14 @@ public class Player {
 
     public PokerHand getPokerHand(){ return this.pokerHand; }
 
+    public boolean setPokerHand(PokerHand hand){
+        this.pokerHand = hand;
+        return true;
+    }
+
     public boolean receiveCard(Card card){
         if(this.hand.size() >= 2){ return false; }
-        if(this.hand.size() == 1){ this.isPair = ( card.equals(this.hand.get(0)) ); }
+        if(this.hand.size() == 1){ this.isPair = ( card.equals(this.hand.getFirst()) ); }
         if(this.isPair) { this.pokerHand = new TwoPair(this.hand);}
         return this.hand.add(card);
     }

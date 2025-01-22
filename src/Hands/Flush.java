@@ -18,6 +18,11 @@ public class Flush implements PokerHand {
         }
     }
 
+    @Override
+    public String getHandName() {
+        return "Flush";
+    }
+
     /**
      * Adds cards in flush together and adds predetermined hand amount to the total.
      * @return total amount the flush is worth

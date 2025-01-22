@@ -19,6 +19,11 @@ public class Straight implements PokerHand{
         }
     }
 
+    @Override
+    public String getHandName() {
+        return "Straight";
+    }
+
     /**
      * Adds cards in straight together and adds predetermined hand amount to the total.
      * @return total amount the straight is worth

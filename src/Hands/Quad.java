@@ -19,6 +19,11 @@ public class Quad implements PokerHand{
         }
     }
 
+    @Override
+    public String getHandName() {
+        return "Quad";
+    }
+
     /**
      * Adds cards in quad together and adds predetermined hand amount to the total.
      * @return total amount the quad is worth

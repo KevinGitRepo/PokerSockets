@@ -19,6 +19,11 @@ public class OnePair implements PokerHand{
         }
     }
 
+    @Override
+    public String getHandName() {
+        return "One Pair";
+    }
+
     /**
      * Adds cards in pair together and adds predetermined hand amount to the total.
      * @return total amount the pair is worth

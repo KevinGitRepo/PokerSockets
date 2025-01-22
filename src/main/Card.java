@@ -57,8 +57,10 @@ public class Card {
         return thisCard.getCardSuit().equals(this.suit) && thisCard.getCardFace().equals(this.face) && thisCard.getCardValue() == this.value;
     }
 
-//      Leaving here in case need in future
-//
+//    /**
+//     * Converts the object to hash code (numerical value)
+//     * @return int representing the object
+//     */
 //    @Override
 //    public int hashCode(){
 //        int result = 17;

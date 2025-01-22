@@ -19,6 +19,11 @@ public class StraightFlush implements PokerHand{
         }
     }
 
+    @Override
+    public String getHandName() {
+        return "Straight Flush";
+    }
+
     /**
      * Adds cards in straight flush together and adds predetermined hand amount to the total.
      * @return total amount the straight flush is worth

@@ -19,6 +19,11 @@ public class Triple implements PokerHand{
         }
     }
 
+    @Override
+    public String getHandName() {
+        return "Triple";
+    }
+
     /**
      * Adds cards in triple together and adds predetermined hand amount to the total.
      * @return total amount the triple is worth
