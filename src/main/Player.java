@@ -32,6 +32,14 @@ public class Player {
     public void removePossibleHand(String possibleHand){
         this.possibleHands.remove(possibleHand);
     }
+
+    public void removePossibleHands(List<String> possibleHands){
+        for(String possibleHand : possibleHands){
+            this.possibleHands.remove(possibleHand);
+        }
+    }
+
+    public List<String> getPossibleHands(){ return this.possibleHands; }
     
     public void fold(){
         this.hand.clear();

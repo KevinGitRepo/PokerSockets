@@ -6,7 +6,7 @@ import main.Player;
 
 import java.util.List;
 
-public class DealerFiveCards implements HandIdentifier {
+public class DealerFiveCards extends HandIdentifierAbstract implements HandIdentifier {
 
     private final HandConnectorManager connectorManager;
 
