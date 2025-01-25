@@ -3,20 +3,18 @@ package HandIdentifier;
 import HandConnector.HandConnectorManager;
 import main.Card;
 import main.Player;
+import main.PokerHandTypes;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class DealerTwoCards extends HandIdentifierAbstract implements HandIdentifier {
+public class DealerTwoCards implements HandIdentifier {
 
-//    private final HandConnectorManager connectorManager;
-    private final List<Card> mergedList;
-    private Player player;
-    private List<Card> dealersHand;
+    private HandIdentifierDistribute handIdentifierDistribute;
+    private HandConnectorManager handConnectorManager;
 
-    public DealerTwoCards(HandConnectorManager connectorManager) {
-        super.setConnectorManager(connectorManager);
-        this.mergedList = new ArrayList<>();
+    public DealerTwoCards(HandConnectorManager connectorManager, HandIdentifierDistribute handIdentifierDistribute) {
+        this.handIdentifierDistribute = handIdentifierDistribute;
+        this.handConnectorManager = connectorManager;
     }
 
     @Override
@@ -29,12 +27,6 @@ public class DealerTwoCards extends HandIdentifierAbstract implements HandIdenti
         Try to decrease amount of calculating for the final two cards
         */
 
-        this.player = player;
-        this.dealersHand = dealersHand;
-
-        super.setPlayer(player);
-        super.setDealersHand(dealersHand);
-
         /*
         Hands to check:
         OnePair
@@ -44,23 +36,27 @@ public class DealerTwoCards extends HandIdentifierAbstract implements HandIdenti
          */
 
         boolean returnValue = false;
-        boolean playerPokerHandBool = this.player.getPokerHand() != null;
+        boolean playerPokerHandBool = player.getPokerHand() != null;
 
         if(!playerPokerHandBool) {
             // No poker hand then check for a single pair
-            return super.checkSinglePair();
+            return this.handIdentifierDistribute.checkHand(PokerHandTypes.ONE_PAIR, player, dealersHand);
         }
 
-        if(this.player.getPokerHand().getHandName().equals("Triple")){
+        if(player.getPokerHand().getHandName().equals(PokerHandTypes.TRIPLE)){
             // If the poker hand is a triple then only possible hand would be quad
-            returnValue = super.checkQuad();
+            returnValue = this.handIdentifierDistribute.checkHand(PokerHandTypes.QUAD, player, dealersHand);
         }
-        else if(this.player.getPokerHand().getHandName().equals("One Pair")){
+        else if(player.getPokerHand().getHandName().equals(PokerHandTypes.ONE_PAIR)){
             // If the poker hand is a single pair then only possible beatable hand would be two pair or triple
-            returnValue = super.checkTripleAndTwoPair();
+            returnValue = this.handIdentifierDistribute.checkHand(PokerHandTypes.TRIPLE, player, dealersHand);
+
+            // Should only check two pair if triple is not possible
+            if(!returnValue){
+                returnValue = this.handIdentifierDistribute.checkHand(PokerHandTypes.TWO_PAIR, player, dealersHand);
+            }
         }
 
-        super.clearList();
         return returnValue;
     }
 }

@@ -13,20 +13,24 @@ import java.util.Map;
  * This manager class will separate the function call depending on the number of cards the dealer has
  */
 public class HandIdentifierManager {
-    private final Map<Integer, HandIdentifier> hands = new HashMap<>();
-    private final HandConnectorManager connectorManager = new HandConnectorManager();
 
-    public HandIdentifierManager() {
+    private final Map<Integer, HandIdentifier> hands = new HashMap<>();
+    private final HandConnectorManager connectorManager;
+    private final HandIdentifierDistribute handIdentifierDistribute;
+
+    public HandIdentifierManager(HandConnectorManager connectorManager, HandIdentifierDistribute handIdentifierDistribute) {
+        this.connectorManager = connectorManager;
+        this.handIdentifierDistribute = handIdentifierDistribute;
         populateHandsMap();
     }
 
     private void populateHandsMap(){
-        this.hands.put(0, new DealerNoCards(this.connectorManager));
-        this.hands.put(1, new DealerOneCard(this.connectorManager));
-        this.hands.put(2, new DealerTwoCards(this.connectorManager));
-        this.hands.put(3, new DealerThreeCards(this.connectorManager));
-        this.hands.put(4, new DealerFourCards(this.connectorManager));
-        this.hands.put(5, new DealerFiveCards(this.connectorManager));
+        this.hands.put(0, new DealerNoCards(this.connectorManager, this.handIdentifierDistribute));
+        this.hands.put(1, new DealerOneCard(this.connectorManager, this.handIdentifierDistribute));
+        this.hands.put(2, new DealerTwoCards(this.connectorManager, this.handIdentifierDistribute));
+        this.hands.put(3, new DealerThreeFourFiveCards(this.connectorManager, this.handIdentifierDistribute));
+        this.hands.put(4, new DealerThreeFourFiveCards(this.connectorManager, this.handIdentifierDistribute));
+        this.hands.put(5, new DealerThreeFourFiveCards(this.connectorManager, this.handIdentifierDistribute));
     }
 
     public void checkHand(Player player, List<Card> dealerCards) {

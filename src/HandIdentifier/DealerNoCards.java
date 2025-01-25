@@ -3,6 +3,7 @@ package HandIdentifier;
 import HandConnector.HandConnectorManager;
 import main.Card;
 import main.Player;
+import main.PokerHandTypes;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ public class DealerNoCards implements HandIdentifier {
     private final HandConnectorManager connectorManager;
     private Player player;
 
-    public DealerNoCards(HandConnectorManager connectorManager) {
+    public DealerNoCards(HandConnectorManager connectorManager, HandIdentifierDistribute handIdentifierDistribute) {
         this.connectorManager = connectorManager;
     }
 
@@ -25,7 +26,6 @@ public class DealerNoCards implements HandIdentifier {
 
         // Add all possible hands to start out
         this.player = player;
-        player.addPossibleHands(this.connectorManager.getHandTypes());
         return checkSinglePair();
     }
 
@@ -39,11 +39,11 @@ public class DealerNoCards implements HandIdentifier {
         // Checks for a single pair in the player's current hand
         // Only needs to send the whole player hand to add to the PokerHand object
         // Normally will need to send only the card list that produced the hand itself
-        if(playerHand.get(0).equals(playerHand.get(1))){
-            this.player.setPokerHand(this.connectorManager.sendForHand("One Pair", playerHand));
+        if(playerHand.getFirst().equals(playerHand.getLast())){
+            this.player.setPokerHand(this.connectorManager.sendForHand(PokerHandTypes.ONE_PAIR, playerHand));
 
             // Removes One Pair from a potential hand since another pair would be considered two pair
-            this.player.removePossibleHand("One Pair");
+            this.player.removePossibleHand(PokerHandTypes.ONE_PAIR);
             return true;
         }
 

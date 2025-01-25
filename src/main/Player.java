@@ -2,10 +2,8 @@ package main;
 
 import Hands.PokerHand;
 import Hands.TwoPair;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 public class Player {
     private final String name;
@@ -13,33 +11,41 @@ public class Player {
     private List<Card> hand;
     private boolean isPair;
     private PokerHand pokerHand;
-    private List<String> possibleHands;
+    private Set<PokerHandTypes> possibleHands;
+    private Set<PokerHandTypes> notPossibleHands;
 
     public Player(String name, int moneyLimit){
         this.name = name;
         this.moneyLimit = moneyLimit;
         this.hand = new ArrayList<>();
         this.isPair = false;
-        this.possibleHands = new ArrayList<>();
+        this.possibleHands = EnumSet.allOf(PokerHandTypes.class);
+        this.notPossibleHands = new HashSet<>();
     }
 
     public String getName(){ return this.name; }
 
-    public void addPossibleHands(List<String> possibleHands){
+    public void addPossibleHands(List<PokerHandTypes> possibleHands){
         this.possibleHands.addAll(possibleHands);
     }
 
-    public void removePossibleHand(String possibleHand){
-        this.possibleHands.remove(possibleHand);
+    public void removePossibleHand(PokerHandTypes possibleHand){
+        this.notPossibleHands.add(possibleHand);
     }
 
-    public void removePossibleHands(List<String> possibleHands){
-        for(String possibleHand : possibleHands){
-            this.possibleHands.remove(possibleHand);
-        }
+    public void removePossibleHands(List<PokerHandTypes> possibleHands) {
+        this.notPossibleHands.addAll(possibleHands);
     }
 
-    public List<String> getPossibleHands(){ return this.possibleHands; }
+    public boolean isHandPossible(PokerHandTypes possibleHand) {
+        return !this.notPossibleHands.contains(possibleHand);
+    }
+
+    public Set<PokerHandTypes> getPossibleHands() {
+        Set<PokerHandTypes> difference = new HashSet<>(this.possibleHands);
+        difference.removeAll(this.notPossibleHands);
+        return difference;
+    }
     
     public void fold(){
         this.hand.clear();

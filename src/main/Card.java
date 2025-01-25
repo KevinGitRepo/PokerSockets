@@ -1,6 +1,6 @@
 package main;
 
-public class Card {
+public class Card implements Comparable<Card> {
     
     private final String suit; // clubs, spades, hearts, diamonds
     private final int value; // 2-14
@@ -79,5 +79,13 @@ public class Card {
     @Override
     public String toString(){
         return this.face + " of " + this.suit;
+    }
+
+    @Override
+    public int compareTo(Card o) {
+        if (this.value == o.value){
+            return 0;
+        }
+        return this.value < o.value ? -1 : 1;
     }
 }

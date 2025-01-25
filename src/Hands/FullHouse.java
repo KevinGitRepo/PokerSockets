@@ -1,6 +1,7 @@
 package Hands;
 
 import main.Card;
+import main.PokerHandTypes;
 
 import java.util.List;
 
@@ -25,8 +26,8 @@ public class FullHouse implements PokerHand{
     }
 
     @Override
-    public String getHandName() {
-        return "Full House";
+    public PokerHandTypes getHandName() {
+        return PokerHandTypes.FULL_HOUSE;
     }
 
     /**

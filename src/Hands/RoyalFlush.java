@@ -1,6 +1,7 @@
 package Hands;
 
 import main.Card;
+import main.PokerHandTypes;
 
 import java.util.List;
 
@@ -25,8 +26,8 @@ public class RoyalFlush implements PokerHand{
     }
 
     @Override
-    public String getHandName() {
-        return "Royal Flush";
+    public PokerHandTypes getHandName() {
+        return PokerHandTypes.ROYAL_FLUSH;
     }
 
     /**

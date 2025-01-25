@@ -2,13 +2,14 @@ package HandConnector;
 
 import Hands.PokerHand;
 import main.Card;
+import main.PokerHandTypes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class HandConnectorManager {
-    private final HashMap<String, HandConnector> handConnectorHashMap;
+    private final HashMap<PokerHandTypes, HandConnector> handConnectorHashMap;
 
     public HandConnectorManager() {
         this.handConnectorHashMap = new HashMap<>();
@@ -16,22 +17,18 @@ public class HandConnectorManager {
     }
 
     private void addMapValues() {
-        this.handConnectorHashMap.put("One Pair", new OnePairConnector());
-        this.handConnectorHashMap.put("Two Pair", new TwoPairConnector());
-        this.handConnectorHashMap.put("Flush", new FlushConnector());
-        this.handConnectorHashMap.put("Full House", new FullHouseConnector());
-        this.handConnectorHashMap.put("Quad", new QuadConnector());
-        this.handConnectorHashMap.put("Royal Flush", new RoyalFlushConnector());
-        this.handConnectorHashMap.put("Straight Flush", new StraightFlushConnector());
-        this.handConnectorHashMap.put("Straight", new StraightConnector());
-        this.handConnectorHashMap.put("Triple", new TripleConnector());
+        this.handConnectorHashMap.put(PokerHandTypes.ONE_PAIR, new OnePairConnector());
+        this.handConnectorHashMap.put(PokerHandTypes.TWO_PAIR, new TwoPairConnector());
+        this.handConnectorHashMap.put(PokerHandTypes.FLUSH, new FlushConnector());
+        this.handConnectorHashMap.put(PokerHandTypes.FULL_HOUSE, new FullHouseConnector());
+        this.handConnectorHashMap.put(PokerHandTypes.QUAD, new QuadConnector());
+        this.handConnectorHashMap.put(PokerHandTypes.ROYAL_FLUSH, new RoyalFlushConnector());
+        this.handConnectorHashMap.put(PokerHandTypes.STRAIGHT_FLUSH, new StraightFlushConnector());
+        this.handConnectorHashMap.put(PokerHandTypes.STRAIGHT, new StraightConnector());
+        this.handConnectorHashMap.put(PokerHandTypes.TRIPLE, new TripleConnector());
     }
 
-    public PokerHand sendForHand(String handIdentifier, List<Card> handList){
+    public PokerHand sendForHand(PokerHandTypes handIdentifier, List<Card> handList){
         return this.handConnectorHashMap.get(handIdentifier).sendForHand(handList);
-    }
-
-    public List<String> getHandTypes() {
-        return new ArrayList<>(this.handConnectorHashMap.keySet());
     }
 }

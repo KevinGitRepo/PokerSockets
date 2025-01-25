@@ -1,5 +1,6 @@
 package main;
 
+import HandConnector.HandConnectorManager;
 import HandIdentifier.*;
 
 import java.util.*;
@@ -10,9 +11,14 @@ class Game{
     private int pot;
     private List<Player> players;
     private Scanner scan;
-    private final HandIdentifierManager handIdentifierManager = new HandIdentifierManager();
+    private final HandIdentifierManager handIdentifierManager;
+    private final HandConnectorManager handConnectorManager;
+    private final HandIdentifierDistribute handIdentifierDistribute;
 
-    private void initializeGlobalVariables(){
+    public Game(){
+        this.handConnectorManager = new HandConnectorManager();
+        this.handIdentifierDistribute = new HandIdentifierDistribute(this.handConnectorManager);
+        this.handIdentifierManager = new HandIdentifierManager(this.handConnectorManager, this.handIdentifierDistribute);
         this.dealerCards = new ArrayList<>();
         this.players = new ArrayList<Player>();
         this.scan = new Scanner(System.in);
@@ -20,8 +26,6 @@ class Game{
 
     // Main game function
     public void start(){
-        initializeGlobalVariables();
-
         Deck deck = new Deck();
 
         System.out.println("Hello.\nWelcome to Poker.\nPlease enter the amount of players that would like to play.");

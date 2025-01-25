@@ -3,6 +3,7 @@ package HandIdentifier;
 import HandConnector.HandConnectorManager;
 import main.Card;
 import main.Player;
+import main.PokerHandTypes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,9 +15,11 @@ public class DealerOneCard implements HandIdentifier {
     private final List<Card> mergedList;
     private Player player;
     private List<Card> dealersHand;
+    private HandIdentifierDistribute handIdentifierDistribute;
 
-    public DealerOneCard(HandConnectorManager connectorManager) {
+    public DealerOneCard(HandConnectorManager connectorManager, HandIdentifierDistribute handIdentifierDistribute) {
         this.connectorManager = connectorManager;
+        this.handIdentifierDistribute = handIdentifierDistribute;
         this.mergedList = new ArrayList<>();
     }
 
@@ -25,23 +28,12 @@ public class DealerOneCard implements HandIdentifier {
         // Have to check larger hands first
         // Check single pair
         // Check triple pair iff single pair was confirmed
-        this.player = player;
-        this.dealersHand = dealersHand;
-
-        boolean returnValue = false;
 
         if(player.getPokerHand() == null){
-            return returnValue;
+            return this.handIdentifierDistribute.checkHand(PokerHandTypes.ONE_PAIR, player, dealersHand);
         }
 
-        if(player.getPokerHand().getHandName().equals("One Pair")){
-            returnValue = checkTriple();
-        }else{
-            returnValue = checkSinglePair();
-        }
-
-        clearList();
-        return returnValue;
+        return this.handIdentifierDistribute.checkHand(PokerHandTypes.TRIPLE, player, dealersHand);
     }
 
     private boolean checkSinglePair() {
@@ -49,10 +41,10 @@ public class DealerOneCard implements HandIdentifier {
         if(index != -1){
             this.mergedList.add(this.player.getHand().get(index));
             this.mergedList.add(this.dealersHand.getFirst());
-            this.player.setPokerHand(this.connectorManager.sendForHand("One Pair", this.mergedList));
+            this.player.setPokerHand(this.connectorManager.sendForHand(PokerHandTypes.ONE_PAIR, this.mergedList));
 
             // Removes One Pair from potential hand list so it won't be checked in the future
-            this.player.removePossibleHand("One Pair");
+            this.player.removePossibleHand(PokerHandTypes.ONE_PAIR);
             return true;
         }
         return false;
@@ -61,10 +53,10 @@ public class DealerOneCard implements HandIdentifier {
     private boolean checkTriple() {
         if(this.player.getHand().getFirst().equals(dealersHand.getFirst())){
             mergeLists(this.dealersHand, this.player.getHand());
-            this.player.setPokerHand(this.connectorManager.sendForHand("Triple", this.mergedList));
+            this.player.setPokerHand(this.connectorManager.sendForHand(PokerHandTypes.TRIPLE, this.mergedList));
 
             // Removes potential hands
-            this.player.removePossibleHands(Arrays.asList("One Pair", "Two Pair"));
+            this.player.removePossibleHands(Arrays.asList(PokerHandTypes.ONE_PAIR, PokerHandTypes.TWO_PAIR));
             return true;
         }
         return false;
