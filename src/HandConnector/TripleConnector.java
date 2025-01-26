@@ -14,7 +14,7 @@ public class TripleConnector implements HandConnector {
      * @return the Triple object
      */
     @Override
-    public PokerHand sendForHand(List<Card> handList) {
-        return new Triple(handList);
+    public PokerHand sendForHand( List<Card> handList ) {
+        return new Triple( handList );
     }
 }

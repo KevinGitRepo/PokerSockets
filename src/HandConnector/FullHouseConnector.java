@@ -14,7 +14,7 @@ public class FullHouseConnector implements HandConnector {
      * @return the FullHouse object
      */
     @Override
-    public PokerHand sendForHand(List<Card> handList) {
-        return new FullHouse(handList);
+    public PokerHand sendForHand( List<Card> handList ) {
+        return new FullHouse( handList );
     }
 }

@@ -5,34 +5,39 @@ import main.PokerHandTypes;
 
 import java.util.List;
 
-public class Triple implements PokerHand{
+public class Triple implements PokerHand {
 
     // Standard value is the best possible amount for lower hand
     private final int STANDARD_TRIPLE_AMOUNT = 96;
 
-    private List<Card> triple;
+    private final List<Card> triple;
     private int totalTripleAmount;
 
-    public Triple(List<Card> triple) {
+    public Triple( List<Card> triple ) {
         this.triple = triple;
-        for (Card card : triple) {
+        for ( Card card : triple ) {
             this.totalTripleAmount += card.getCardValue();
         }
     }
 
+    /**
+     * { @inheritDoc }
+     */
     @Override
     public List<Card> getHandCards() {
         return this.triple;
     }
 
+    /**
+     * { @inheritDoc }
+     */
     @Override
     public PokerHandTypes getHandName() {
         return PokerHandTypes.TRIPLE;
     }
 
     /**
-     * Adds cards in triple together and adds predetermined hand amount to the total.
-     * @return total amount the triple is worth
+     * { @inheritDoc }
      */
     @Override
     public int amountWorth() {
@@ -45,7 +50,7 @@ public class Triple implements PokerHand{
      */
     @Override
     public String toString() {
-        return "Triple: " + String.join(", ", triple.toString());
+        return "Triple: " + String.join( ", ", triple.toString() );
     }
 
 }

@@ -5,34 +5,39 @@ import main.PokerHandTypes;
 
 import java.util.List;
 
-public class Straight implements PokerHand{
+public class Straight implements PokerHand {
 
     // Standard value is the best possible amount for lower hand
     private final int STANDARD_STRAIGHT_AMOUNT = 138;
 
-    private List<Card> straight;
+    private final List<Card> straight;
     private int totalStraightAmount;
 
-    public Straight(List<Card> straight) {
+    public Straight( List<Card> straight ) {
         this.straight = straight;
-        for (Card card : straight) {
+        for ( Card card : straight ) {
             this.totalStraightAmount += card.getCardValue();
         }
     }
 
+    /**
+     * { @inheritDoc }
+     */
     @Override
     public List<Card> getHandCards() {
         return this.straight;
     }
 
+    /**
+     * { @inheritDoc }
+     */
     @Override
     public PokerHandTypes getHandName() {
         return PokerHandTypes.STRAIGHT;
     }
 
     /**
-     * Adds cards in straight together and adds predetermined hand amount to the total.
-     * @return total amount the straight is worth
+     * { @inheritDoc }
      */
     @Override
     public int amountWorth() {
@@ -45,7 +50,7 @@ public class Straight implements PokerHand{
      */
     @Override
     public String toString() {
-        return "Straight: " + String.join(", ", straight.toString());
+        return "Straight: " + String.join( ", ", straight.toString() );
     }
 
 }

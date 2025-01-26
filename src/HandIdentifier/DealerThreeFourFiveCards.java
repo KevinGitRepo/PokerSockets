@@ -1,26 +1,24 @@
 package HandIdentifier;
 
-import HandConnector.HandConnectorManager;
 import main.Card;
 import main.Player;
 import main.PokerHandTypes;
 
 import java.util.List;
 
-public class DealerThreeFourFiveCards implements HandIdentifier{
+public class DealerThreeFourFiveCards implements HandIdentifier {
 
-    private Player player;
-    private List<Card> dealersHand;
-    private HandIdentifierDistribute handIdentifierDistribute;
-    private HandConnectorManager handConnectorManager;
+    private final HandIdentifierDistribute handIdentifierDistribute;
 
-    public DealerThreeFourFiveCards(HandConnectorManager connectorManager, HandIdentifierDistribute handIdentifierDistribute) {
+    public DealerThreeFourFiveCards( HandIdentifierDistribute handIdentifierDistribute ) {
         this.handIdentifierDistribute = handIdentifierDistribute;
-        this.handConnectorManager = connectorManager;
     }
 
+    /**
+     * { @inheritDoc }
+     */
     @Override
-    public boolean checkHand(Player player, List<Card> dealersHand) {
+    public boolean checkHand( Player player, List<Card> dealersHand ) {
         /*
         Combination of three card, four card, and five card hands due to similar function calls
         Each one goes through possible hands and checks each one, usually by the fourth or fifth card, the
@@ -30,22 +28,22 @@ public class DealerThreeFourFiveCards implements HandIdentifier{
         boolean returnValue = false;
         boolean playerPokerHandBool = player.getPokerHand() != null;
 
-        if (!playerPokerHandBool) {
-            return this.handIdentifierDistribute.checkHand(PokerHandTypes.ONE_PAIR, player, dealersHand);
+        if ( !playerPokerHandBool ) {
+            return this.handIdentifierDistribute.checkHand( PokerHandTypes.ONE_PAIR, player, dealersHand );
         }
 
-        for (PokerHandTypes pokerHandTypes : player.getPossibleHands()){
-            if (!player.isHandPossible(pokerHandTypes)){
+        for ( PokerHandTypes pokerHandTypes : player.getPossibleHands() ) {
+            if ( !player.isHandPossible( pokerHandTypes ) ) {
                 continue;
             }
 
-            if (pokerHandTypes == PokerHandTypes.STRAIGHT_FLUSH ||
-                    pokerHandTypes == PokerHandTypes.ROYAL_FLUSH){
-                this.handIdentifierDistribute.checkHand(PokerHandTypes.FLUSH, player, dealersHand);
+            if ( pokerHandTypes == PokerHandTypes.STRAIGHT_FLUSH ||
+                    pokerHandTypes == PokerHandTypes.ROYAL_FLUSH ) {
+                this.handIdentifierDistribute.checkHand( PokerHandTypes.FLUSH, player, dealersHand );
             }
 
             // Needs to return true if only one hand was changed
-            returnValue = this.handIdentifierDistribute.checkHand(pokerHandTypes, player, dealersHand) || returnValue;
+            returnValue = this.handIdentifierDistribute.checkHand( pokerHandTypes, player, dealersHand ) || returnValue;
         }
 
 

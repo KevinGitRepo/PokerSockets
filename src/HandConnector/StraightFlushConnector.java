@@ -14,7 +14,7 @@ public class StraightFlushConnector implements HandConnector {
      * @return the StraightFlush object
      */
     @Override
-    public PokerHand sendForHand(List<Card> handList) {
-        return new StraightFlush(handList);
+    public PokerHand sendForHand( List<Card> handList ) {
+        return new StraightFlush( handList );
     }
 }

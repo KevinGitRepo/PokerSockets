@@ -5,34 +5,39 @@ import main.PokerHandTypes;
 
 import java.util.List;
 
-public class Quad implements PokerHand{
+public class Quad implements PokerHand {
 
     // Standard value is the best possible amount for lower hand
     private final int STANDARD_QUAD_AMOUNT = 325;
 
-    private List<Card> quad;
+    private final List<Card> quad;
     private int totalQuadAmount;
 
-    public Quad(List<Card> quad) {
+    public Quad( List<Card> quad ) {
         this.quad = quad;
-        for (Card card : quad) {
+        for ( Card card : quad ) {
             this.totalQuadAmount += card.getCardValue();
         }
     }
 
+    /**
+     * { @inheritDoc }
+     */
     @Override
     public List<Card> getHandCards() {
         return this.quad;
     }
 
+    /**
+     * { @inheritDoc }
+     */
     @Override
     public PokerHandTypes getHandName() {
         return PokerHandTypes.QUAD;
     }
 
     /**
-     * Adds cards in quad together and adds predetermined hand amount to the total.
-     * @return total amount the quad is worth
+     * { @inheritDoc }
      */
     @Override
     public int amountWorth() {
@@ -45,7 +50,7 @@ public class Quad implements PokerHand{
      */
     @Override
     public String toString() {
-        return "Quad: " + String.join(", ", quad.toString());
+        return "Quad: " + String.join( ", ", quad.toString() );
     }
 
 }

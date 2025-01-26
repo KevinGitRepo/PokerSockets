@@ -13,7 +13,7 @@ public class FlushConnector implements HandConnector {
      * @return the Flush object
      */
     @Override
-    public PokerHand sendForHand(List<Card> handList) {
-        return new Flush(handList);
+    public PokerHand sendForHand( List<Card> handList ) {
+        return new Flush( handList );
     }
 }

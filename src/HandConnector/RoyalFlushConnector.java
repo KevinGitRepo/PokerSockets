@@ -14,7 +14,7 @@ public class RoyalFlushConnector implements HandConnector {
      * @return the RoyalFlush object
      */
     @Override
-    public PokerHand sendForHand(List<Card> handList) {
-        return new RoyalFlush(handList);
+    public PokerHand sendForHand( List<Card> handList ) {
+        return new RoyalFlush( handList );
     }
 }

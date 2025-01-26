@@ -14,7 +14,7 @@ public class StraightConnector implements HandConnector {
      * @return the Straight object
      */
     @Override
-    public PokerHand sendForHand(List<Card> handList) {
-        return new Straight(handList);
+    public PokerHand sendForHand( List<Card> handList ) {
+        return new Straight( handList );
     }
 }

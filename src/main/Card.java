@@ -12,7 +12,7 @@ public class Card implements Comparable<Card> {
      * @param face String value of the card's face value
      * @param value Integer value for the card's numerical value
      */
-    public Card(String suit, String face, int value){
+    public Card( String suit, String face, int value ){
         this.suit = suit;
         this.face = face;
         this.value = value;
@@ -48,15 +48,17 @@ public class Card implements Comparable<Card> {
      * @return true if objects are equal, false otherwise
      */
     @Override
-    public boolean equals(Object card) {
-        if (card == this) {
+    public boolean equals( Object card ) {
+        if ( card == this ) {
             return true;
         }
-        if (card == null || card.getClass() != getClass()) {
+        if ( card == null || card.getClass() != getClass() ) {
             return false;
         }
-        Card thisCard = (Card) card;
-        return thisCard.getCardSuit().equals(this.suit) && thisCard.getCardFace().equals(this.face) && thisCard.getCardValue() == this.value;
+        Card thisCard = ( Card ) card;
+        return thisCard.getCardSuit().equals( this.suit ) &&
+                thisCard.getCardFace().equals( this.face ) &&
+                thisCard.getCardValue() == this.value;
     }
 
 //    /**
@@ -81,9 +83,14 @@ public class Card implements Comparable<Card> {
         return this.face + " of " + this.suit;
     }
 
+    /**
+     * Compares a given Card object with this card object
+     * @param o the object to be compared.
+     * @return integer for greater, less than, or equal to
+     */
     @Override
-    public int compareTo(Card o) {
-        if (this.value == o.value){
+    public int compareTo( Card o ) {
+        if ( this.value == o.value ){
             return 0;
         }
         return this.value < o.value ? -1 : 1;

@@ -14,7 +14,7 @@ public class TwoPairConnector implements HandConnector {
      * @return the TwoPair object
      */
     @Override
-    public PokerHand sendForHand(List<Card> handList) {
-        return new TwoPair(handList);
+    public PokerHand sendForHand( List<Card> handList ) {
+        return new TwoPair( handList );
     }
 }

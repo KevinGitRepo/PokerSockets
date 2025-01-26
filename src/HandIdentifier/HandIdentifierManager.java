@@ -25,12 +25,13 @@ public class HandIdentifierManager {
     }
 
     private void populateHandsMap(){
-        this.hands.put(0, new DealerNoCards(this.connectorManager, this.handIdentifierDistribute));
-        this.hands.put(1, new DealerOneCard(this.connectorManager, this.handIdentifierDistribute));
-        this.hands.put(2, new DealerTwoCards(this.connectorManager, this.handIdentifierDistribute));
-        this.hands.put(3, new DealerThreeFourFiveCards(this.connectorManager, this.handIdentifierDistribute));
-        this.hands.put(4, new DealerThreeFourFiveCards(this.connectorManager, this.handIdentifierDistribute));
-        this.hands.put(5, new DealerThreeFourFiveCards(this.connectorManager, this.handIdentifierDistribute));
+        DealerThreeFourFiveCards dealerThreeFourFiveCards = new DealerThreeFourFiveCards(this.handIdentifierDistribute);
+        this.hands.put(0, new DealerNoCards(this.connectorManager));
+        this.hands.put(1, new DealerOneCard(this.handIdentifierDistribute));
+        this.hands.put(2, new DealerTwoCards(this.handIdentifierDistribute));
+        this.hands.put(3, dealerThreeFourFiveCards);
+        this.hands.put(4, dealerThreeFourFiveCards);
+        this.hands.put(5, dealerThreeFourFiveCards);
     }
 
     public void checkHand(Player player, List<Card> dealerCards) {

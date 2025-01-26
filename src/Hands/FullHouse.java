@@ -10,31 +10,35 @@ public class FullHouse implements PokerHand{
     // Standard value is the best possible amount for lower hand
     private final int STANDARD_FULLHOUSE_AMOUNT = 257;
 
-    private List<Card> fullHouse;
+    private final List<Card> fullHouse;
     private int totalFullHouseAmount;
 
-    public FullHouse(List<Card> fullHouse) {
+    public FullHouse( List<Card> fullHouse ) {
         this.fullHouse = fullHouse;
-        for (Card card : fullHouse) {
+        for ( Card card : fullHouse ) {
             this.totalFullHouseAmount += card.getCardValue();
         }
     }
 
+    /**
+     * { @inheritDoc }
+     */
     @Override
     public List<Card> getHandCards() {
         return this.fullHouse;
     }
 
+    /**
+     * { @inheritDoc }
+     */
     @Override
     public PokerHandTypes getHandName() {
         return PokerHandTypes.FULL_HOUSE;
     }
 
     /**
-     * Adds cards in full house together and adds predetermined hand amount to the total
-     * @return total amount the full house is worth
+     * { @inheritDoc }
      */
-    @Override
     public int amountWorth() {
         return STANDARD_FULLHOUSE_AMOUNT + this.totalFullHouseAmount;
     }
@@ -45,7 +49,7 @@ public class FullHouse implements PokerHand{
      */
     @Override
     public String toString() {
-        return "Full House: " + String.join(", ", fullHouse.toString());
+        return "Full House: " + String.join( ", ", fullHouse.toString() );
     }
 
 }

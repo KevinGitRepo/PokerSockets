@@ -7,27 +7,32 @@ import main.PokerHandTypes;
 
 import java.util.List;
 
-public class CheckStraight extends HandCheckParent implements CheckHand{
+public class CheckStraight extends HandCheckParent implements CheckHand {
 
     private final HandConnectorManager handConnectorManager;
 
-    public CheckStraight(HandConnectorManager handConnectorManager) {
+    public CheckStraight( HandConnectorManager handConnectorManager ) {
         this.handConnectorManager = handConnectorManager;
     }
 
+    /**
+     * { @inheritDoc }
+     */
     @Override
-    public boolean check(Player player, List<Card> dealersHand) {
+    public boolean check( Player player, List<Card> dealersHand ) {
 
-        List<Card> mergedList = super.mergeLists(player.getHand(), dealersHand);
+        // Combines lists
+        List<Card> mergedList = super.mergeLists( player.getHand(), dealersHand );
 
-        List<Card> returnedList = super.checkStraightHelper(player, mergedList);
+        // Checks if list contains a straight, if no straight, returns null
+        List<Card> returnedList = super.checkStraightHelper( player, mergedList );
 
-        if (returnedList == null){
+        if ( returnedList == null ) {
             return false;
         }
 
         return player.setPokerHand(
                 this.handConnectorManager.sendForHand(
-                        PokerHandTypes.STRAIGHT, returnedList));
+                        PokerHandTypes.STRAIGHT, returnedList ) );
     }
 }

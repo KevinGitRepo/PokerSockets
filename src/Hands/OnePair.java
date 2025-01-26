@@ -5,34 +5,39 @@ import main.PokerHandTypes;
 
 import java.util.List;
 
-public class OnePair implements PokerHand{
+public class OnePair implements PokerHand {
 
     // Standard value is the best possible amount for lower hand
     private final int STANDARD_ONEPAIR_AMOUNT = 14;
 
-    private List<Card> onePair;
+    private final List<Card> onePair;
     private int totalOnePairAmount;
 
-    public OnePair(List<Card> onePair) {
+    public OnePair( List<Card> onePair ) {
         this.onePair = onePair;
-        for (Card card : onePair) {
+        for ( Card card : onePair ) {
             this.totalOnePairAmount += card.getCardValue();
         }
     }
 
+    /**
+     * { @inheritDoc }
+     */
     @Override
     public List<Card> getHandCards() {
         return this.onePair;
     }
 
+    /**
+     * { @inheritDoc }
+     */
     @Override
     public PokerHandTypes getHandName() {
         return PokerHandTypes.ONE_PAIR;
     }
 
     /**
-     * Adds cards in pair together and adds predetermined hand amount to the total.
-     * @return total amount the pair is worth
+     * { @inheritDoc }
      */
     @Override
     public int amountWorth() {
@@ -45,7 +50,7 @@ public class OnePair implements PokerHand{
      */
     @Override
     public String toString() {
-        return "Pair: " + String.join(", ", onePair.toString());
+        return "Pair: " + String.join( ", ", onePair.toString() );
     }
 
 }

@@ -10,29 +10,34 @@ public class Flush implements PokerHand {
     // Standard value is the best possible amount for lower hand
     private final int STANDARD_FLUSH_AMOUNT = 198;
 
-    private List<Card> flush;
+    private final List<Card> flush;
     private int totalFlushAmount;
 
-    public Flush(List<Card> flush) {
+    public Flush( List<Card> flush ) {
         this.flush = flush;
-        for (Card card : flush) {
+        for ( Card card : flush ) {
             this.totalFlushAmount += card.getCardValue();
         }
     }
 
+    /**
+     * { @inheritDoc }
+     */
     @Override
     public List<Card> getHandCards() {
         return this.flush;
     }
 
+    /**
+     * { @inheritDoc }
+     */
     @Override
     public PokerHandTypes getHandName() {
         return PokerHandTypes.FLUSH;
     }
 
     /**
-     * Adds cards in flush together and adds predetermined hand amount to the total.
-     * @return total amount the flush is worth
+     * { @inheritDoc }
      */
     @Override
     public int amountWorth() {
@@ -45,7 +50,7 @@ public class Flush implements PokerHand {
      */
     @Override
     public String toString() {
-        return "Flush: " + String.join(", ", flush.toString());
+        return "Flush: " + String.join( ", ", flush.toString() );
     }
     
 }

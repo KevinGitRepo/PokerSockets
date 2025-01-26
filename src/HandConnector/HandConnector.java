@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface HandConnector {
 
-    public PokerHand sendForHand(List<Card> handList);
+    PokerHand sendForHand( List<Card> handList );
 }
