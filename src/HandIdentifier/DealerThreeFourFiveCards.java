@@ -37,9 +37,14 @@ public class DealerThreeFourFiveCards implements HandIdentifier {
                 continue;
             }
 
+            // Larger hands have pre-requisites
             if ( pokerHandTypes == PokerHandTypes.STRAIGHT_FLUSH ||
                     pokerHandTypes == PokerHandTypes.ROYAL_FLUSH ) {
                 this.handIdentifierDistribute.checkHand( PokerHandTypes.FLUSH, player, dealersHand );
+            }
+
+            if ( pokerHandTypes == PokerHandTypes.QUAD ) {
+                this.handIdentifierDistribute.checkHand( PokerHandTypes.TRIPLE, player, dealersHand );
             }
 
             // Needs to return true if only one hand was changed

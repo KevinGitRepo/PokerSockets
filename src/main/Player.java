@@ -3,6 +3,11 @@ package main;
 import Hands.PokerHand;
 import Hands.TwoPair;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.*;
 
 public class Player {
@@ -14,13 +19,33 @@ public class Player {
     private Set<PokerHandTypes> possibleHands;
     private Set<PokerHandTypes> notPossibleHands;
 
-    public Player(String name, int moneyLimit){
+    private Socket socket;
+    private BufferedReader in;
+    private PrintWriter out;
+
+    public Player(String name, int moneyLimit, Socket socket) throws IOException {
         this.name = name;
         this.moneyLimit = moneyLimit;
         this.hand = new ArrayList<>();
         this.isPair = false;
         this.possibleHands = EnumSet.allOf(PokerHandTypes.class);
         this.notPossibleHands = new HashSet<>();
+
+        this.socket = socket;
+        this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        this.out = new PrintWriter(socket.getOutputStream(), true);
+    }
+
+    public void sendMessage(String message) {
+        out.println(message);
+    }
+
+    public String receiveMessage() throws IOException {
+        return in.readLine();
+    }
+
+    public void close() throws IOException {
+        socket.close();
     }
 
     public String getName(){ return this.name; }
@@ -89,3 +114,4 @@ public class Player {
         return this.name;
     }
 }
+
