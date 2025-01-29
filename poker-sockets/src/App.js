@@ -1,25 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import io from 'socket.io-client';
 
 function App() {
-  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
   const [socket, setSocket] = useState(null);
+  const [dealersCards, setDealersCards] = useState([]);
+  const [playersCards, setPlayersCards] = useState([]);
+  const [pokerHand, setPokerHand] = useState([]);
+  const [playerTurnBool, setPlayersTurnBool] = useState(false);
 
   useEffect(() => {
-    const localSocket = io('http://localhost:5000');
+    const localSocket = new WebSocket("ws://localhost:5000/game")
+    // const localSocket = io('http://localhost:5000');
 
-    localSocket.on('connect', () => {
-      console.log('Connect to WebSocket');
-    });
-
-    localSocket.on('message', (data) => {
-      setMessage(data);
-    });
+    localSocket.onmessage = (event) => {
+      setMessages((prevMessages) => [...prevMessages, event.data]);
+    };
 
     setSocket(localSocket);
 
-    return () => {
-      localSocket.disconnect();
+    localSocket.onopen = () => {
+      setMessages((prevMessages) => [...prevMessages, event.data]);
+    };
+
+    localSocket.onclose = () => {
+      console.log("Websocket closed");
     };
   }, []);
 
@@ -29,9 +33,19 @@ function App() {
 
   return (
     <div>
-      <h1>Socket.IO Communication</h1>
-      <button onClick={sendMessage}>Send Message to Server</button>
-      <p>Message from server: {message}</p>
+      <h1>Welcome to Poker</h1>
+      <h3>Dealer's Cards: {dealersCards}</h3>
+      <h4>Your Cards: {playersCards}</h4>
+      {playerTurnBool &&
+          <div>
+            <button>Bet</button>
+            <button>Check</button>
+            <button>Fold</button>
+          </div>
+      }
+      <p>Current Poker Hand: </p>
+      <button onClick={() => setPlayersTurnBool(!playerTurnBool)}>Change Player Turn Bool</button>
+      <p>Log: {messages}</p>
     </div>
   );
 }
