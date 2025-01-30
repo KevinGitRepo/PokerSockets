@@ -51,9 +51,11 @@ public class CheckFullHouse extends HandCheckParent implements CheckHand {
             }
         }
 
+        List<Card> fullHouseSecondList = fullHouseMap.get( keyForListOfTwo );
+
         // If the second list has 3 values, removes one to keep size 5
-        if ( fullHouseMap.get( keyForListOfTwo ).size() > 2 ) {
-            fullHouseMap.get( keyForListOfTwo ).removeLast();
+        if ( fullHouseSecondList.size() > 2 ) {
+            fullHouseSecondList.remove( fullHouseSecondList.size() - 1 );
         }
 
         mergedList = super.mergeLists( fullHouseMap.get( keyForListOfThree ), fullHouseMap.get( keyForListOfTwo ) );

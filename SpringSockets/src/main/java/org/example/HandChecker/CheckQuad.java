@@ -24,48 +24,46 @@ public class CheckQuad implements CheckHand {
      */
     @Override
     public boolean check(Player player, List<Card> dealersHand ) {
-        // TODO
+        /*
+        Checks to make sure that the player already has a triple or a full house in or to check for a quad.
+        If a triple, the list of cards will be added to a list.
+        If a full house, the cards will be split up to determine the triple and the pair.
+        The value of the triple cards will be saved and used for determining if the last card in the dealers hand
+        is equivalent.
+        If equivalent, removes any card type less than a quad and changes the poker hand to quad
+         */
 
         PokerHand pokerHand = player.getPokerHand();
         List<Card> mergedList = new ArrayList<>();
-        Card tripleCard;
-        Card fullHouseSecondCard;
+        Map<Integer, List<Card>> cards = new HashMap<>();
+        int tripleValue = 0;
 
         // If the poker hand is not a triple or full house then it can't be a quad
         if ( pokerHand.getHandName().equals( PokerHandTypes.TRIPLE ) ) {
-            tripleCard = pokerHand.getHandCards().get( 0 );
+            mergedList.addAll( pokerHand.getHandCards() );
         }
         // Gets both cards from the full house
         else if ( pokerHand.getHandName().equals( PokerHandTypes.FULL_HOUSE ) ) {
-            Map<Integer, Integer> cards = new HashMap<>();
+
             for ( Card card : pokerHand.getHandCards() ) {
-                cards.put( card.getCardValue(), cards.getOrDefault( card.getCardValue(), 1 ) + 1 );
-                if ( cards.get( card.getCardValue() ) == 3 ) {
-                    tripleCard = card;
-                }
-                else if ( cards.get( card.getCardValue() ) == 2 ) {
-                    fullHouseSecondCard = card;
+                cards.putIfAbsent( card.getCardValue(), new ArrayList<>() );
+                cards.get( card.getCardValue() ).add( card );
+                if ( cards.get( card.getCardValue() ).size() == 3 ) {
+                    tripleValue = card.getCardValue();
                 }
             }
+
+            mergedList.addAll( cards.get( tripleValue ) );
         }
         else {
             return false;
         }
 
-        // Assumes player already has a triple to consider a quad
-        // Retrieves one of the triple cards, if last card in dealers hand
-        for ( Card card : pokerHand.getHandCards() ) {
-            if ( card.equals( dealersHand.get(dealersHand.size() - 1) ) ) {
-                mergedList.add( card );
-            }
-        }
-
-        // 3 cards must equal the last card in the dealers hand in order to create a quad
-        if( mergedList.size() != 3 ){
+        if (dealersHand.get( dealersHand.size() - 1 ).getCardValue() != tripleValue ) {
             return false;
         }
 
-        mergedList.add( dealersHand.get(dealersHand.size() - 1) );
+        mergedList.add( dealersHand.get( dealersHand.size() - 1 ) );
 
         // Removes every potential hand except ones that can beat a quad
         for( PokerHandTypes potentialHandType: player.getPossibleHands() ) {
