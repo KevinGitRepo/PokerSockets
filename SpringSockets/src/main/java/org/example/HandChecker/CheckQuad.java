@@ -38,6 +38,10 @@ public class CheckQuad implements CheckHand {
         Map<Integer, List<Card>> cards = new HashMap<>();
         int tripleValue = 0;
 
+        if ( pokerHand == null ) {
+            return false;
+        }
+
         // If the poker hand is not a triple or full house then it can't be a quad
         if ( pokerHand.getHandName().equals( PokerHandTypes.TRIPLE ) ) {
             mergedList.addAll( pokerHand.getHandCards() );

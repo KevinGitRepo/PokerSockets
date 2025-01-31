@@ -72,6 +72,8 @@ class GameServer{
         return gameState;
     }
 
+    public List<Card> getDealerCards() { return dealerCards; }
+
     private void distributeCards() {
 
         // Deals two cards per player
@@ -90,23 +92,35 @@ class GameServer{
     }
 
     public void playerBet( int amount ) {
-
+        players.get( this.currentPlayerIndex ).bet( amount );
+        checkPlayerHand(players.get( this.currentPlayerIndex ));
     }
 
     public void playerFold() {
-
+        Player currentPlayer = this.players.remove( this.currentPlayerIndex );
+        currentPlayer.fold();
+        this.foldedPlayers.add( currentPlayer );
     }
 
     public void playerCheck() {
-
+        checkPlayerHand(players.get( this.currentPlayerIndex ));
     }
 
     public void nextPlayer() {
-        this.currentPlayerIndex = ( this.players.size() - ( this.currentPlayerIndex + 1 ) ) % this.playerCount();
+        this.currentPlayerIndex = ( this.currentPlayerIndex + 1 ) % MAX_PLAYERS;
     }
 
     public Player getCurrentPlayer() {
         return this.players.get( this.currentPlayerIndex );
+    }
+
+    /**
+     * Uses a hashmap of objects to check to see if the player currently has a certain hand.
+     * This will only check the possible hands given the amount of cards in play
+     * @param player who will have their cards checked
+     */
+    private void checkPlayerHand(Player player){
+        this.handIdentifierManager.checkHand(player, this.dealerCards);
     }
 
     // Main game function
@@ -208,14 +222,7 @@ class GameServer{
         System.out.println("Thanks for playing!");
     }
 
-//    /**
-//     * Uses a hashmap of objects to check to see if the player currently has a certain hand.
-//     * This will only check the possible hands given the amount of cards in play
-//     * @param player who will have their cards checked
-//     */
-//    private void checkPlayerHand(Player player){
-//        this.handIdentifierManager.checkHand(player, this.dealerCards);
-//    }
+
 //
 //    /**
 //     * Prompts the user for any person leaving and removes them from the players list

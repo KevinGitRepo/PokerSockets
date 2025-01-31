@@ -29,7 +29,7 @@ public class CheckFlush extends HandCheckParent implements CheckHand {
         cardsMap.put( "Diamonds", new ArrayList<>() );
 
         List<Card> mergedList = super.mergeLists( player.getHand(), dealersHand );
-        String keyLongestList = "";
+        String keyLongestList = cardsMap.keySet().iterator().next(); // Gets first key in map
         int countLongestList = 0;
 
         // Checks if there is at least 5 of the same suit and keeps track of the longest list
@@ -37,14 +37,7 @@ public class CheckFlush extends HandCheckParent implements CheckHand {
         for ( Card card : mergedList ) {
             cardsMap.get( card.getCardSuit() ).add( card );
 
-            if ( card.getCardSuit().equals( keyLongestList ) ) {
-                countLongestList++;
-            }
-            else {
-                countLongestList--;
-            }
-
-            if ( countLongestList == 0 ) {
+            if ( cardsMap.get( card.getCardSuit() ).size() > cardsMap.get( keyLongestList ).size() ) {
                 keyLongestList = card.getCardSuit();
             }
         }

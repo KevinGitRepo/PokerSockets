@@ -20,7 +20,10 @@ function App() {
       if ( event.data.includes( "Your Turn" ) ) {
         setPlayersTurnBool(true);
       }
-      setMessages((prevMessages) => [...prevMessages, event.data + " : "]);
+      if ( event.data.includes( "Dealer Cards" ) ) {
+        setDealersCards( event.data )
+      }
+      setMessages(event.data );
     };
 
     setSocket(localSocket);

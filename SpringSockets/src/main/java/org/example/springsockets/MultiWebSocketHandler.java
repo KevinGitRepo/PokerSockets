@@ -43,28 +43,19 @@ public class MultiWebSocketHandler extends TextWebSocketHandler {
         }
 
         else if ( message.getPayload().toString().contains( "bet" ) ) {
-
+            gameServer.playerBet(30);
+            broadcastToAllPlayers(gameServer.getCurrentPlayer().getName() + " bet $30");
         }
 
         else if ( message.getPayload().toString().contains( "fold" ) ) {
-
+            gameServer.playerFold();
+            broadcastToAllPlayers(gameServer.getCurrentPlayer().getName() + " folded");
         }
 
         else if ( message.getPayload().toString().contains( "check" ) ) {
-
+            gameServer.playerCheck();
+            broadcastToAllPlayers(gameServer.getCurrentPlayer().getName() + " checked");
         }
-
-        /*
-        String messageType = message.getPayload().toString();
-        switch (messageType) {
-            case "bet":
-                // Use the bet functionality
-            case "fold":
-                // Use the fold functionality
-            case "check":
-                // Use the check functionality
-        }
-        */
 
         // Only run this if game is currently playing
         System.out.println(gameServer.getGameState());
@@ -73,6 +64,7 @@ public class MultiWebSocketHandler extends TextWebSocketHandler {
             if (gameServer.playerCount() == playerCountRound) {
                 playerCountRound = 1;
                 gameServer.newRound();
+                broadcastToAllPlayers("Dealer Cards: " + gameServer.getDealerCards() );
             } else {
                 playerCountRound++;
             }

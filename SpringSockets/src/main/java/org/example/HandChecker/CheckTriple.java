@@ -25,6 +25,11 @@ public class CheckTriple implements CheckHand {
     public boolean check(Player player, List<Card> dealersHand ) {
 
         PokerHand pokerHand = player.getPokerHand();
+
+        if ( pokerHand == null) {
+            return false;
+        }
+
         Card pokerHandFirstCard = pokerHand.getHandCards().get(0);
         Card dealersLastCard = dealersHand.get(dealersHand.size() - 1);
         List<Card> mergedList = new ArrayList<>();
