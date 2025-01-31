@@ -20,8 +20,11 @@ function App() {
       if ( event.data.includes( "Your Turn" ) ) {
         setPlayersTurnBool(true);
       }
-      if ( event.data.includes( "Dealer Cards" ) ) {
-        setDealersCards( event.data )
+      else if ( event.data.includes( "Dealer Cards" ) ) {
+        setDealersCards( event.data.substring(event.data.indexOf('[') + 1, event.data.indexOf(']') ) );
+      }
+      else if ( event.data.includes( "Your Cards" ) ) {
+        setPlayersCards( event.data.substring(event.data.indexOf('[') + 1, event.data.indexOf(']') ) );
       }
       setMessages(event.data );
     };

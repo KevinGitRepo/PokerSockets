@@ -20,7 +20,7 @@ public class MultiWebSocketHandler extends TextWebSocketHandler {
 
     private final PlayerObjectMapper playerObjectMapper = new PlayerObjectMapper();
 
-    private static boolean firstPlayer;
+    private static boolean gameOver = false;
 
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         // Once the player opens a tab they connect to the server
@@ -60,22 +60,15 @@ public class MultiWebSocketHandler extends TextWebSocketHandler {
         // Only run this if game is currently playing
         System.out.println(gameServer.getGameState());
         if ( gameServer.getGameState().equals( GameState.IN_PROGRESS ) ) {
-            System.out.println("Game is In Progress");
-            if (gameServer.playerCount() == playerCountRound) {
-                playerCountRound = 1;
-                gameServer.newRound();
-                broadcastToAllPlayers("Dealer Cards: " + gameServer.getDealerCards() );
-            } else {
-                playerCountRound++;
-            }
-            gameServer.nextPlayer();
-            sendMessageToPlayer(gameServer.getCurrentPlayer().getSession(), new TextMessage( "Your Turn" ) );
-            broadcastToAllPlayers(gameServer.getCurrentPlayer() + "'s turn.");
+            playGame();
         }
 
-        if ( gameServer.gameStart() ) {
+        if ( gameServer.gameStart() && !gameOver) {
             broadcastToAllPlayers("Game started.");
-            sendMessageToPlayer(gameServer.getCurrentPlayer().getSession(), new TextMessage("Your Turn"));
+            sendMessageToPlayer( gameServer.getCurrentPlayer().getSession(),
+                    new TextMessage( "Your Cards" + gameServer.getCurrentPlayer().getHand() ) );
+            sendMessageToPlayer( gameServer.getCurrentPlayer().getSession(),
+                    new TextMessage( "Your Turn" ) );
         }
     }
 
@@ -83,10 +76,37 @@ public class MultiWebSocketHandler extends TextWebSocketHandler {
         session.sendMessage(message);
     }
 
+    public void playGame() throws Exception {
+        System.out.println("Game is In Progress");
+        if ( gameServer.playerCount() == playerCountRound && gameServer.getDealerCards().size() == 5 ) {
+            Player winner = gameServer.getWinner();
+            broadcastToAllPlayers( winner.toString() + " won with hand " +
+                    ( winner.getPokerHand() == null ? "high " + winner.getHighCard() : winner.getPokerHand().toString() ) );
+            gameServer.restart();
+            gameOver = true;
+            playerCountRound = 1;
+        }
+        else {
+            if (gameServer.playerCount() == playerCountRound) {
+                playerCountRound = 1;
+                gameServer.newRound();
+                broadcastToAllPlayers("Dealer Cards: " + gameServer.getDealerCards());
+            } else {
+                playerCountRound++;
+            }
+            gameServer.nextPlayer();
+            sendMessageToPlayer(gameServer.getCurrentPlayer().getSession(), new TextMessage("Your Turn"));
+            sendMessageToPlayer( gameServer.getCurrentPlayer().getSession(),
+                    new TextMessage( "Your Cards" + gameServer.getCurrentPlayer().getHand() ) );
+            broadcastToAllPlayers(gameServer.getCurrentPlayer() + "'s turn.");
+        }
+    }
+
     @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
+    public void afterConnectionClosed( WebSocketSession session, CloseStatus closeStatus ) throws Exception {
+        gameServer.playerLeft( players.get( session ) );
         players.remove( session );
-        System.out.println("Connection closed: " + session.getId());
+        System.out.println( "Connection closed: " + session.getId() );
     }
 
     private void broadcastToAllPlayers( String message ) throws Exception{

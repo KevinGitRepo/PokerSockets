@@ -11,7 +11,6 @@ public class Player {
     private int moneyLimit;
     private WebSocketSession session;
     private List<Card> hand;
-    private boolean isPair;
     private PokerHand pokerHand;
     private Set<PokerHandTypes> possibleHands;
     private Set<PokerHandTypes> notPossibleHands;
@@ -21,7 +20,6 @@ public class Player {
         this.moneyLimit = moneyLimit;
         this.session = session;
         this.hand = new ArrayList<>();
-        this.isPair = false;
         this.possibleHands = new TreeSet<>();
         this.notPossibleHands = new HashSet<>();
         populatePossibleHands();
@@ -53,9 +51,11 @@ public class Player {
         return difference;
     }
     
-    public void fold(){
+    public List<Card> fold(){
+        List<Card> returnHand = this.hand;
         this.hand.clear();
-        this.possibleHands.clear();
+        this.notPossibleHands.clear();
+        return returnHand;
     }
     
     public void win(int amount){ this.moneyLimit += amount; }
@@ -73,21 +73,30 @@ public class Player {
         return true;
     }
 
-    public boolean receiveCard(Card card){
-        if(this.hand.size() >= 2){ return false; }
-        if(this.hand.size() == 1){ this.isPair = ( card.equals(this.hand.get(0)) ); }
-        if(this.isPair) { this.pokerHand = new TwoPair(this.hand);}
-        return this.hand.add(card);
-    }
-
-    public void resetPlayer(){
-        this.hand.clear();
-        this.isPair = false;
-    }
-
+    /**
+     * For the player to bet a certain amount of money
+     * @param amount number to bet
+     * @return int of amount of money left
+     */
     public int bet(int amount){
         this.moneyLimit -= amount;
         return this.moneyLimit;
+    }
+
+    public boolean higherValueThan( PokerHand comparingHand ) {
+        if ( comparingHand == null ) return true;
+
+        if ( this.pokerHand == null ) return false;
+
+        return comparingHand.amountWorth() < this.pokerHand.amountWorth();
+    }
+
+    public Card getHighCard() {
+        return hand.get( 0 ).getCardValue() > hand.get( 1 ).getCardValue() ? hand.get( 0 ) : hand.get( 1 );
+    }
+
+    public int getHighCardValue() {
+        return Math.max( hand.get( 0 ).getCardValue(), hand.get( 1 ).getCardValue() );
     }
 
     @Override

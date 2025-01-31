@@ -5,6 +5,7 @@ import org.example.General.Player;
 import org.example.General.PokerHandTypes;
 import org.example.HandConnector.HandConnectorManager;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,20 +22,23 @@ public class CheckOnePair implements CheckHand {
      */
     @Override
     public boolean check(Player player, List<Card> dealersHand ) {
-        // Only check the last card in dealersHand for a single pair instead of every card
-        Card dealerLastCard = dealersHand.get(dealersHand.size() - 1);
-        Card pairedCard;
+        List<Card> pair = new ArrayList<>();
         Card playersFirstCard = player.getHand().get(0);
         Card playersSecondCard = player.getHand().get(1);
 
         // Checks if either hand can make a single pair with the last card dealt
-        if ( playersFirstCard.equals( dealerLastCard ) ) {
-            pairedCard = playersFirstCard;
+        for ( Card card : dealersHand ) {
+            if ( playersFirstCard.equals( card ) ) {
+                pair.add( card );
+                pair.add( playersFirstCard );
+            }
+            else if ( playersSecondCard.equals( card ) ) {
+                pair.add( card );
+                pair.add( playersFirstCard );
+            }
         }
-        else if ( playersSecondCard.equals( dealerLastCard ) ) {
-            pairedCard = playersSecondCard;
-        }
-        else {
+
+        if ( pair.isEmpty() ) {
             return false;
         }
 
@@ -42,7 +46,6 @@ public class CheckOnePair implements CheckHand {
         player.removePossibleHand( PokerHandTypes.ONE_PAIR );
 
         return player.setPokerHand(
-                this.handConnectorManager.sendForHand(
-                        PokerHandTypes.ONE_PAIR, Arrays.asList( dealerLastCard, pairedCard ) ) );
+                this.handConnectorManager.sendForHand( PokerHandTypes.ONE_PAIR, pair ) );
     }
 }

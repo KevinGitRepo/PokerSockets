@@ -22,6 +22,7 @@ public class DealerThreeCards implements HandIdentifier {
 
     /**
      * Adds poker hand types to set
+     * These hands will be checked when dealer has 3 cards
      */
     private void populateSetHands() {
         this.checkHands.addAll(Arrays.asList( PokerHandTypes.ONE_PAIR, PokerHandTypes.TWO_PAIR,

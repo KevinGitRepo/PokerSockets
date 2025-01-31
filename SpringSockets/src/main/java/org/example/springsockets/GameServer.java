@@ -88,7 +88,15 @@ class GameServer{
     }
 
     public void newRound() {
-        this.dealerCards.add( this.deck.dealCard() );
+        if ( this.dealerCards.isEmpty() ) {
+            // Flop
+            this.dealerCards.addAll( Arrays.asList( this.deck.dealCard(),
+                                        this.deck.dealCard(), this.deck.dealCard() ) );
+        }
+        else {
+            // Turn and River
+            this.dealerCards.add( this.deck.dealCard() );
+        }
     }
 
     public void playerBet( int amount ) {
@@ -98,7 +106,7 @@ class GameServer{
 
     public void playerFold() {
         Player currentPlayer = this.players.remove( this.currentPlayerIndex );
-        currentPlayer.fold();
+        this.deck.addCards( currentPlayer.fold() );
         this.foldedPlayers.add( currentPlayer );
     }
 
@@ -121,6 +129,48 @@ class GameServer{
      */
     private void checkPlayerHand(Player player){
         this.handIdentifierManager.checkHand(player, this.dealerCards);
+    }
+
+    public void playerLeft( Player player) {
+        this.players.remove( player );
+    }
+
+    private void addWaitingPlayers() {
+        while ( this.players.size() < MAX_PLAYERS || !this.waitingPlayers.isEmpty()) {
+            this.players.add( this.waitingPlayers.remove( 0 ) );
+        }
+    }
+
+    public void restart() {
+        this.deck.addCards( this.dealerCards );
+        this.dealerCards.clear();
+        this.foldedPlayers.clear();
+        this.gameState = GameState.WAITING;
+        addWaitingPlayers();
+        removeCardsFromPlayers();
+    }
+
+    private void removeCardsFromPlayers() {
+        for ( Player player : this.players ) {
+            this.deck.addCards( player.fold() ); // Removes the player's cards and possible hands
+        }
+    }
+
+    public Player getWinner() {
+        Player winner = null;
+        for ( Player player : this.players ) {
+            if ( winner == null ) {
+                winner = player;
+            }
+            else if ( winner.getPokerHand() == null && player.getPokerHand() == null ) {
+                winner = winner.getHighCardValue() < player.getHighCardValue() ? player : winner;
+            }
+            else if ( player.higherValueThan( winner.getPokerHand() ) ) {
+                winner = player;
+            }
+        }
+
+        return winner;
     }
 
     // Main game function
