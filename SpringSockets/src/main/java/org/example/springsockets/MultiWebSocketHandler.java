@@ -7,22 +7,24 @@ import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MultiWebSocketHandler extends TextWebSocketHandler {
 
-    private final List<WebSocketSession> sessions = new ArrayList<>();
-    private final Map<String, Player> players = new ConcurrentHashMap<>();
+    private static int playerCountRound = 1;
+
+    private final Map<WebSocketSession, Player> players = new ConcurrentHashMap<>();
+
+    private final static GameServer gameServer = new GameServer();
 
     private final PlayerObjectMapper playerObjectMapper = new PlayerObjectMapper();
 
+    private static boolean firstPlayer;
+
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        sessions.add(session);
+        // Once the player opens a tab they connect to the server
         System.out.println("New Connection established: " + session.getId());
-        session.sendMessage(new TextMessage("Connection established! Welcome."));
     }
 
     @Override
@@ -31,9 +33,26 @@ public class MultiWebSocketHandler extends TextWebSocketHandler {
 
         System.out.println("Message: " + message.getPayload());
 
-        Player receivedPlayer = playerObjectMapper.readValue(message.getPayload().toString());
+        // Creates new player and adds to players map
+        if ( message.getPayload().toString().contains( "create" ) ) {
+            Player receivedPlayer = playerObjectMapper.readValue(message.getPayload().toString(), session);
 
-        System.out.println("Welcome: " + receivedPlayer.getName());
+            players.put( session, receivedPlayer );
+
+            session.sendMessage( new TextMessage( gameServer.addPlayer( receivedPlayer ) ) );
+        }
+
+        else if ( message.getPayload().toString().contains( "bet" ) ) {
+
+        }
+
+        else if ( message.getPayload().toString().contains( "fold" ) ) {
+
+        }
+
+        else if ( message.getPayload().toString().contains( "check" ) ) {
+
+        }
 
         /*
         String messageType = message.getPayload().toString();
@@ -47,11 +66,40 @@ public class MultiWebSocketHandler extends TextWebSocketHandler {
         }
         */
 
+        // Only run this if game is currently playing
+        System.out.println(gameServer.getGameState());
+        if ( gameServer.getGameState().equals( GameState.IN_PROGRESS ) ) {
+            System.out.println("Game is In Progress");
+            if (gameServer.playerCount() == playerCountRound) {
+                playerCountRound = 1;
+                gameServer.newRound();
+            } else {
+                playerCountRound++;
+            }
+            gameServer.nextPlayer();
+            sendMessageToPlayer(gameServer.getCurrentPlayer().getSession(), new TextMessage( "Your Turn" ) );
+            broadcastToAllPlayers(gameServer.getCurrentPlayer() + "'s turn.");
+        }
+
+        if ( gameServer.gameStart() ) {
+            broadcastToAllPlayers("Game started.");
+            sendMessageToPlayer(gameServer.getCurrentPlayer().getSession(), new TextMessage("Your Turn"));
+        }
+    }
+
+    public void sendMessageToPlayer(WebSocketSession session, TextMessage message) throws Exception {
+        session.sendMessage(message);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
-        sessions.remove(session);
+        players.remove( session );
         System.out.println("Connection closed: " + session.getId());
+    }
+
+    private void broadcastToAllPlayers( String message ) throws Exception{
+        for ( WebSocketSession session : players.keySet() ) {
+            session.sendMessage( new TextMessage( message ) );
+        }
     }
 }

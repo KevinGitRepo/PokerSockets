@@ -2,27 +2,32 @@ package org.example.General;
 
 import org.example.Hands.PokerHand;
 import org.example.Hands.TwoPair;
+import org.springframework.web.socket.WebSocketSession;
 
 import java.util.*;
 
 public class Player {
     private final String name;
     private int moneyLimit;
+    private WebSocketSession session;
     private List<Card> hand;
     private boolean isPair;
     private PokerHand pokerHand;
     private Set<PokerHandTypes> possibleHands;
     private Set<PokerHandTypes> notPossibleHands;
 
-    public Player(String name, int moneyLimit) {
+    public Player(String name, int moneyLimit, WebSocketSession session) {
         this.name = name;
         this.moneyLimit = moneyLimit;
+        this.session = session;
         this.hand = new ArrayList<>();
         this.isPair = false;
         this.possibleHands = new TreeSet<>();
         this.notPossibleHands = new HashSet<>();
         populatePossibleHands();
     }
+
+    public WebSocketSession getSession() { return session; }
 
     private void populatePossibleHands() {
         possibleHands.addAll(Arrays.asList(PokerHandTypes.values()));

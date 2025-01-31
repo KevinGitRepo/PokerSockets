@@ -14,10 +14,13 @@ function App() {
 
   useEffect(() => {
     const localSocket = new WebSocket("ws://localhost:8080/game");
-    // const localSocket = io('http://localhost:5000');
 
     localSocket.onmessage = (event) => {
-      setMessages((prevMessages) => [...prevMessages, event.data]);
+      console.log(event.data);
+      if ( event.data.includes( "Your Turn" ) ) {
+        setPlayersTurnBool(true);
+      }
+      setMessages((prevMessages) => [...prevMessages, event.data + " : "]);
     };
 
     setSocket(localSocket);
@@ -37,9 +40,14 @@ function App() {
 
   const createPlayer = () => {
       const playerData = { name: pName, moneyLimit: moneyLimit};
-      socket.send(JSON.stringify({action: "create", data: playerData}));
+      // socket.send(JSON.stringify({action: "create", data: playerData}));
+      handleSocketSending("create", playerData);
       setPlayerCreatedBool(true);
   };
+
+  const handleSocketSending = (action, message) => {
+    socket.send(JSON.stringify({action: action, data: message}));
+  }
 
   const changePlayerTurn = () => {
       setPlayersTurnBool(!playerTurnBool);
@@ -54,6 +62,21 @@ function App() {
       setMoneyLimit(event.target.value);
   };
 
+  const handleCheck = () => {
+    setPlayersTurnBool(false);
+    handleSocketSending("check", "");
+  }
+
+  const handleFold = () => {
+    setPlayersTurnBool(false);
+    handleSocketSending("fold", "");
+  }
+
+  const handleBet = () => {
+    setPlayersTurnBool(false);
+    handleSocketSending("bet", 20);
+  }
+
   return (
       <div>
           {!playerCreatedBool &&
@@ -65,23 +88,30 @@ function App() {
                   <button onClick={createPlayer}>Submit</button>
               </div>
           }
-          {playerCreatedBool &&
+          {(playerCreatedBool && !playerTurnBool) &&
+              <div>
+                <p>Waiting for turn!</p>
+              </div>
+          }
+
+          {(playerCreatedBool && playerTurnBool) &&
               <div>
                   <h1>Welcome to Poker</h1>
                   <h3>Dealer's Cards: {dealersCards}</h3>
                   <h4>Your Cards: {playersCards}</h4>
                   {playerTurnBool &&
                       <div>
-                          <button>Bet</button>
-                          <button>Check</button>
-                          <button>Fold</button>
+                          <button onClick={handleBet}>Bet</button>
+                          <button onClick={handleCheck}>Check</button>
+                          <button onClick={handleFold}>Fold</button>
                       </div>
                   }
                   <p>Current Poker Hand: </p>
                   <button onClick={changePlayerTurn}>Change Player Turn Bool</button>
-                  <p>Log: {messages}</p>
+
               </div>
           }
+          <p>Log: {messages}</p>
       </div>
   );
 }
