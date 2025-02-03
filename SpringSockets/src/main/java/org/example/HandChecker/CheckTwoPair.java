@@ -7,6 +7,7 @@ import org.example.HandConnector.HandConnectorManager;
 import org.example.Hands.PokerHand;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CheckTwoPair implements CheckHand {
@@ -29,33 +30,31 @@ public class CheckTwoPair implements CheckHand {
             return false;
         }
 
-        Card pairCard = pokerHand.getHandCards().get(0);
-        Card notPairCard;
+        Card firstCard = null;
+        Card secondCard = null;
 
-        Card dealerLastCard = dealersHand.get( dealersHand.size() - 1 );
+        for ( Card card : dealersHand ) {
+            if ( card.getCardValue() == player.getHand().get(0).getCardValue() ) {
+                firstCard = card;
+            }
+            else if ( card.getCardValue() == player.getHand().get(1).getCardValue() ) {
+                secondCard = card;
+            }
 
-        // Finds the card that is not a part of the One Pair
-        // One pair is assumed to already exists
-        if ( pairCard.equals( player.getHand().get(0) ) ) {
-            notPairCard = dealerLastCard;
+            if ( firstCard != null && secondCard != null ) {
+                break;
+            }
         }
-        else {
-            notPairCard = dealersHand.get(0);
-        }
 
-        if ( !notPairCard.equals( dealerLastCard ) ) {
+        if ( firstCard == null || secondCard == null ) {
             return false;
         }
-
-        // Both cards were found in the dealer's hand and will combine them to create the Two Pair
-        List<Card> mergedList = new ArrayList<>( player.getPokerHand().getHandCards() );
-        mergedList.add( notPairCard );
-        mergedList.add( dealerLastCard );
 
         player.removePossibleHand( PokerHandTypes.TWO_PAIR );
 
         return player.setPokerHand(
                 this.handConnectorManager.sendForHand(
-                        PokerHandTypes.TWO_PAIR, mergedList ) );
+                        PokerHandTypes.TWO_PAIR,
+                        Arrays.asList( firstCard, player.getHand().get(0), secondCard, player.getHand().get(1) ) ) );
     }
 }

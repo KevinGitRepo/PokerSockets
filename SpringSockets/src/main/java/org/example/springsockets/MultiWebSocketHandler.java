@@ -22,6 +22,8 @@ public class MultiWebSocketHandler extends TextWebSocketHandler {
 
     private static boolean gameOver = false;
 
+    private static int playersReady = 1;
+
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         // Once the player opens a tab they connect to the server
         System.out.println("New Connection established: " + session.getId());
@@ -32,6 +34,16 @@ public class MultiWebSocketHandler extends TextWebSocketHandler {
         // This is where the actions will be parsed
 
         System.out.println("Message: " + message.getPayload());
+
+        if ( message.getPayload().toString().contains( "ready" ) ) {
+            playersReady++;
+
+            if ( playersReady == gameServer.playerCount() && gameOver ) {
+                gameServer.gameStart();
+                gameOver = false;
+                playersReady = 1;
+            }
+        }
 
         // Creates new player and adds to players map
         if ( message.getPayload().toString().contains( "create" ) ) {

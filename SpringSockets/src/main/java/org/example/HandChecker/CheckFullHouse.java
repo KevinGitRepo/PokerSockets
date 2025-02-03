@@ -22,27 +22,31 @@ public class CheckFullHouse extends HandCheckParent implements CheckHand {
 
         List<Card> mergedList = super.mergeLists( player.getHand(), dealersHand );
 
-        Map<Integer, List<Card>> fullHouseMap = new HashMap<>();
+        Map<Integer, List<Card>> fullHouseMap = new TreeMap<>();
 
         int keyForListOfThree = -1;
         int keyForListOfTwo = -1;
 
         for ( Card card : mergedList ) {
-            fullHouseMap.putIfAbsent( card.getCardValue(), new ArrayList<>() );
-            fullHouseMap.get( card.getCardValue() ).add( card );
+            fullHouseMap.putIfAbsent(card.getCardValue(), new ArrayList<>());
+            fullHouseMap.get(card.getCardValue()).add(card);
+        }
 
-            if ( fullHouseMap.get( card.getCardValue() ).size() == 3 ) {
-                if ( keyForListOfThree == -1 ) {
-                    keyForListOfThree = card.getCardValue();
-                }
-                else {
-                    keyForListOfThree = Math.max(card.getCardValue(), keyForListOfThree);
-                    keyForListOfTwo = Math.max(Math.min(card.getCardValue(), keyForListOfThree), keyForListOfTwo);
-                }
+        for (int key : fullHouseMap.keySet()) {
+            if ( fullHouseMap.get(key).size() == 3 && keyForListOfThree < 0) {
+                keyForListOfThree = key;
             }
-            else if ( fullHouseMap.get( card.getCardValue() ).size() == 2 ) {
-                keyForListOfTwo = card.getCardValue();
+            else if ( fullHouseMap.get(key).size() >= 2 && keyForListOfTwo < 0) {
+                keyForListOfTwo = key;
             }
+
+            if ( keyForListOfThree > 0 && keyForListOfTwo > 0 ) {
+                break;
+            }
+        }
+
+        if (keyForListOfThree < 0 || keyForListOfTwo < 0) {
+            return false;
         }
 
         List<Card> fullHouseSecondList = fullHouseMap.get( keyForListOfTwo );

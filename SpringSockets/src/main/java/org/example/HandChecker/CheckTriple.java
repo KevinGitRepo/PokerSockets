@@ -6,9 +6,7 @@ import org.example.General.PokerHandTypes;
 import org.example.HandConnector.HandConnectorManager;
 import org.example.Hands.PokerHand;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class CheckTriple implements CheckHand {
 
@@ -30,55 +28,64 @@ public class CheckTriple implements CheckHand {
             return false;
         }
 
-        Card pokerHandFirstCard = pokerHand.getHandCards().get(0);
-        Card dealersLastCard = dealersHand.get(dealersHand.size() - 1);
+        Map<Integer, List<Card>> dealersCards = new HashMap<>();
         List<Card> mergedList = new ArrayList<>();
 
-        // If hand is one pair, then check single card pair for triple
-        if ( pokerHand.getHandName() == PokerHandTypes.ONE_PAIR ) {
-            if ( !pokerHandFirstCard.equals( dealersLastCard ) ) {
-                return false;
-            }
-
-            mergedList.addAll( pokerHand.getHandCards() );
-            mergedList.add( dealersLastCard );
+        for ( Card card : dealersHand ) {
+            dealersCards.putIfAbsent( card.getCardValue(), new ArrayList<>() );
+            dealersCards.get( card.getCardValue() ).add( card );
         }
 
-        // If hand is two pair, checks if either pair could be a triple
-        // This would make it a full house, will create full house here and remove possible hands for quicker
-        // functionality
+        List<Card> firstCardTripleList = dealersCards.get( player.getHand().get(0).getCardValue() );
+        List<Card> secondCardTripleList = dealersCards.get( player.getHand().get(1).getCardValue() );
 
-        if ( pokerHand.getHandName() == PokerHandTypes.TWO_PAIR ) {
-
-            Card playerFirstCard = player.getHand().get(0);
-            Card playerSecondCard = player.getHand().get(1);
-
-            // Add card to list if they are equal, return false otherwise
-            if ( playerFirstCard.equals( dealersLastCard ) || playerSecondCard.equals( dealersLastCard ) ) {
-                mergedList.addAll( pokerHand.getHandCards() );
-            }
-            else {
-                return false;
-            }
-
-            mergedList.add( dealersLastCard );
+        // Could have a quad here but will not check until the quad checks later
+        if ( ( firstCardTripleList != null && firstCardTripleList.size() == 2 ) ) {
+            mergedList.addAll( firstCardTripleList );
+            mergedList.add( player.getHand().get( 0 ) );
+        }
+        else if ( ( secondCardTripleList != null && secondCardTripleList.size() == 2 ) ) {
+            mergedList.addAll( secondCardTripleList );
+            mergedList.add( player.getHand().get( 1 ) );
         }
 
-        // Returns if triple is already found
-        if ( mergedList.size() == 3 ) {
+        if ( !mergedList.isEmpty() ) {
             return player.setPokerHand(
                     this.handConnectorManager.sendForHand(
                             PokerHandTypes.TRIPLE, mergedList ) );
         }
 
-        // Found a full house
+        // If Empty then it could be a quad or nothing
+        // Check for quad
+        if ( ( firstCardTripleList != null && firstCardTripleList.size() == 3 ) ) {
+            mergedList.addAll( firstCardTripleList );
+            mergedList.add( player.getHand().get( 0 ) );
+        }
+        else if ( ( secondCardTripleList != null && secondCardTripleList.size() == 3 ) ) {
+            mergedList.addAll( secondCardTripleList );
+            mergedList.add( player.getHand().get( 1 ) );
+        }
 
-        // One Pair was already removed by this point
-        player.removePossibleHands( Arrays.asList( PokerHandTypes.TRIPLE, PokerHandTypes.TWO_PAIR ,
-                                                    PokerHandTypes.STRAIGHT, PokerHandTypes.FLUSH) );
+        if ( !mergedList.isEmpty() ) {
+            // Removes other hands too
+            removePokerHandTypes( player );
 
-        return player.setPokerHand(
-                this.handConnectorManager.sendForHand(
-                        PokerHandTypes.FULL_HOUSE, mergedList ) );
+            return player.setPokerHand(
+                    this.handConnectorManager.sendForHand(
+                            PokerHandTypes.QUAD, mergedList ) );
+        }
+
+        return false;
+    }
+
+    private void removePokerHandTypes(Player player) {
+        for( PokerHandTypes potentialHandType: player.getPossibleHands() ) {
+
+            if( !potentialHandType.equals( PokerHandTypes.ROYAL_FLUSH ) &&
+                    !potentialHandType.equals( PokerHandTypes.STRAIGHT_FLUSH ) ) {
+
+                player.removePossibleHand( potentialHandType );
+            }
+        }
     }
 }

@@ -6,7 +6,6 @@ import org.example.General.PokerHandTypes;
 import org.example.HandConnector.HandConnectorManager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class CheckOnePair implements CheckHand {
@@ -28,11 +27,11 @@ public class CheckOnePair implements CheckHand {
 
         // Checks if either hand can make a single pair with the last card dealt
         for ( Card card : dealersHand ) {
-            if ( playersFirstCard.equals( card ) ) {
+            if ( playersFirstCard.getCardValue() == card.getCardValue() ) {
                 pair.add( card );
                 pair.add( playersFirstCard );
             }
-            else if ( playersSecondCard.equals( card ) ) {
+            else if ( playersSecondCard.getCardValue() == card.getCardValue() ) {
                 pair.add( card );
                 pair.add( playersFirstCard );
             }

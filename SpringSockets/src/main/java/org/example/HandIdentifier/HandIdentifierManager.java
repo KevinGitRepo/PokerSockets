@@ -26,12 +26,15 @@ public class HandIdentifierManager {
 
     private void populateHandsMap(){
         this.hands.put(0, new DealerNoCards(this.connectorManager));
-        this.hands.put(3, new DealerThreeCards(this.handIdentifierDistribute));
-        this.hands.put(4, new DealerFourCards(this.handIdentifierDistribute));
         this.hands.put(5, new DealerFiveCards(this.handIdentifierDistribute));
     }
 
     public void checkHand(Player player, List<Card> dealerCards) {
-        this.hands.get(dealerCards.size()).checkHand(player, dealerCards);
+        // Temporary solution; Will fix later
+        // TODO
+        if ( dealerCards.isEmpty() || dealerCards.size() == 5 ) {
+            this.hands.get(dealerCards.size()).checkHand(player, dealerCards);
+        }
+
     }
 }

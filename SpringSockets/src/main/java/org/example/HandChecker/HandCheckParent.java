@@ -3,11 +3,11 @@ package org.example.HandChecker;
 import org.example.General.Card;
 import org.example.General.Player;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class HandCheckParent {
+
+    private static final int SIZE_OF_POKER_HAND = 4;
 
     /**
      * Checks if the card list provided contains a straight
@@ -19,51 +19,49 @@ public class HandCheckParent {
         // Sorts the cards to make the determination easier
         Collections.sort( cardsList );
 
-        List<Card> cardsListCopy = new ArrayList<>( cardsList );
-
-        int straightCount = 1;
-        int previousCardValue = 0;
+        boolean found = false;
 
         // Instead of removing the cards from the list each time which is O(n), keep track of indexes
         int endIndex = 0;
-        int counter = 0;
+        int index = 0;
+        int beginningIndex = 0;
 
-        // Finds if there is a sequence in the card list
-        for ( Card card : cardsList ) {
-            if ( card.getCardValue() == previousCardValue + 1 ) {
-                straightCount++;
+        // Only checks first and last card in a 5 card sequence for a straight since the hand is already in order
+        while ( index <= cardsList.size() - ( SIZE_OF_POKER_HAND + 1 ) ) {
+            if (cardsList.get(index).getCardValue() + SIZE_OF_POKER_HAND == cardsList.get(index + SIZE_OF_POKER_HAND).getCardValue() &&
+                    noDuplicateCards( cardsList.subList(index, index + SIZE_OF_POKER_HAND + 1) ) ) {
+                endIndex = index + SIZE_OF_POKER_HAND;
+                beginningIndex = index;
+                found = true;
             }
-            // Resets if the card is not in a sequence
-            else if ( previousCardValue != 0 && straightCount < 5 ) {
-                straightCount = 1;
-            }
-
-            // changes the final index only if there are at least 5 cards in a row
-            if ( straightCount >= 5 ) {
-                endIndex = counter;
-            }
-
-            counter++;
-            previousCardValue = card.getCardValue();
+            index++;
         }
 
-        // No straight if end index was never changed
-        if ( endIndex == 0) {
+        // No straight if found was never changed
+        if ( !found ) {
             return null;
         }
 
-        int beginningIndex = endIndex - 5;
-
-        // Only if there contains more than a 5 card straight and checks for the highest straight possible
-        while ( straightCount > 5 && checkCardInPlayerHand( player, cardsListCopy.subList( beginningIndex, endIndex ) ) ) {
-            straightCount--;
-            endIndex--;
-            beginningIndex--;
-        }
-
         // Will check the final 5 cards and return a list or null
-        // Returns the sub list for the largest possible straight
-        return checkCardInPlayerHand( player, cardsListCopy.subList( beginningIndex, endIndex ) ) ? cardsListCopy.subList( beginningIndex, endIndex ) : null;
+        // Returns a new list if a card in the final list is in the player's hand and there are no duplicate cards
+        return checkCardInPlayerHand( player, cardsList.subList( beginningIndex, endIndex + 1) )
+                ? cardsList.subList( beginningIndex, endIndex + 1) : null;
+    }
+
+    /**
+     * Checks to see if there are any duplicate cards inside the list
+     * @param cardsList list of cards
+     * @return true if there are no duplicate cards, false otherwise
+     */
+    private boolean noDuplicateCards( List<Card> cardsList ) {
+        int previousValue = 0;
+        for ( Card card : cardsList ) {
+            if ( card.getCardValue() == previousValue ) {
+                return false;
+            }
+            previousValue = card.getCardValue();
+        }
+        return true;
     }
 
     /**

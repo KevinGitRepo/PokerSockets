@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CheckQuad implements CheckHand {
+public class CheckQuad extends HandCheckParent implements CheckHand {
 
     private final HandConnectorManager handConnectorManager;
 
@@ -34,40 +34,34 @@ public class CheckQuad implements CheckHand {
          */
 
         PokerHand pokerHand = player.getPokerHand();
-        List<Card> mergedList = new ArrayList<>();
-        Map<Integer, List<Card>> cards = new HashMap<>();
-        int tripleValue = 0;
 
         if ( pokerHand == null ) {
             return false;
         }
 
+        if ( !pokerHand.getHandName().equals( PokerHandTypes.FULL_HOUSE ) &&
+                !pokerHand.getHandName().equals( PokerHandTypes.TRIPLE ) ) {
+            return false;
+        }
+
+        List<Card> mergedList = new ArrayList<>( dealersHand );
+        mergedList.addAll( player.getHand() );
+        Map<Integer, List<Card>> cards = new HashMap<>();
+        int quadValue = 0;
+
         // If the poker hand is not a triple or full house then it can't be a quad
-        if ( pokerHand.getHandName().equals( PokerHandTypes.TRIPLE ) ) {
-            mergedList.addAll( pokerHand.getHandCards() );
-        }
-        // Gets both cards from the full house
-        else if ( pokerHand.getHandName().equals( PokerHandTypes.FULL_HOUSE ) ) {
-
-            for ( Card card : pokerHand.getHandCards() ) {
-                cards.putIfAbsent( card.getCardValue(), new ArrayList<>() );
-                cards.get( card.getCardValue() ).add( card );
-                if ( cards.get( card.getCardValue() ).size() == 3 ) {
-                    tripleValue = card.getCardValue();
-                }
+        for ( Card card : mergedList ) {
+            cards.putIfAbsent( card.getCardValue(), new ArrayList<>() );
+            cards.get( card.getCardValue() ).add( card );
+            if ( cards.get( card.getCardValue() ).size() == 4  &&
+                super.checkCardInPlayerHand( player, cards.get( card.getCardValue() ) ) ) {
+                quadValue = card.getCardValue();
             }
-
-            mergedList.addAll( cards.get( tripleValue ) );
         }
-        else {
+
+        if ( quadValue <= 0 ) {
             return false;
         }
-
-        if (dealersHand.get( dealersHand.size() - 1 ).getCardValue() != tripleValue ) {
-            return false;
-        }
-
-        mergedList.add( dealersHand.get( dealersHand.size() - 1 ) );
 
         // Removes every potential hand except ones that can beat a quad
         for( PokerHandTypes potentialHandType: player.getPossibleHands() ) {

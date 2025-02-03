@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import {CreatePlayer} from "./CreatePlayer";
 
 function App() {
   const [messages, setMessages] = useState([]);
   const [socket, setSocket] = useState(null);
   const [dealersCards, setDealersCards] = useState([]);
   const [playersCards, setPlayersCards] = useState([]);
-  const [pokerHand, setPokerHand] = useState([]);
   const [playerTurnBool, setPlayersTurnBool] = useState(false);
   const [playerCreatedBool, setPlayerCreatedBool] = useState(false);
+
+  const [gameOverBool, setGameOverBool] = useState(false);
 
   const [pName, setPName] = useState("");
   const [moneyLimit, setMoneyLimit] = useState("");
@@ -26,6 +28,12 @@ function App() {
       else if ( event.data.includes( "Your Cards" ) ) {
         setPlayersCards( event.data.substring(event.data.indexOf('[') + 1, event.data.indexOf(']') ) );
       }
+      else if ( event.data.includes( "won" ) ) {
+        setGameOverBool(true);
+      }
+      else if ( event.data.includes( "started" ) ) {
+        setGameOverBool(false);
+      }
       setMessages(event.data );
     };
 
@@ -33,7 +41,6 @@ function App() {
 
     localSocket.onopen = () => {
       console.log("Connected to WebSocket");
-      // localSocket.send("Hello from client!");
     };
 
     localSocket.onclose = () => {
@@ -44,28 +51,12 @@ function App() {
     return () => localSocket.close();
   }, []);
 
-  const createPlayer = () => {
-      const playerData = { name: pName, moneyLimit: moneyLimit};
-      // socket.send(JSON.stringify({action: "create", data: playerData}));
-      handleSocketSending("create", playerData);
-      setPlayerCreatedBool(true);
-  };
-
   const handleSocketSending = (action, message) => {
     socket.send(JSON.stringify({action: action, data: message}));
   }
 
   const changePlayerTurn = () => {
       setPlayersTurnBool(!playerTurnBool);
-      // socket.send("Hello");
-  };
-
-  const handleNameChange = (event) => {
-      setPName(event.target.value);
-  };
-
-  const handleMoneyLimitChange = (event) => {
-      setMoneyLimit(event.target.value);
   };
 
   const handleCheck = () => {
@@ -83,17 +74,19 @@ function App() {
     handleSocketSending("bet", 20);
   }
 
+  const handleReady = () => {
+    handleSocketSending("ready", "");
+  }
+
   return (
       <div>
-          {!playerCreatedBool &&
-              <div>
-                  <h1>Welcome!</h1>
-                  <h2>Please enter your name and money limit:</h2>
-                  <input type="text" value={pName} onChange={handleNameChange} placeholder="Enter Player Name"/>
-                  <input type="text" value={moneyLimit} onChange={handleMoneyLimitChange} placeholder="Enter Your Money Limit"/>
-                  <button onClick={createPlayer}>Submit</button>
-              </div>
-          }
+          <CreatePlayer isPlayerCreated={playerCreatedBool}
+                        playerName={pName}
+                        playerMoney={moneyLimit}
+                        setPlayerName={setPName}
+                        setPlayerMoney={setMoneyLimit}
+                        setIsPlayerCreated={setPlayerCreatedBool}
+                        socket={socket}/>
           {(playerCreatedBool && !playerTurnBool) &&
               <div>
                 <p>Waiting for turn!</p>
@@ -118,6 +111,11 @@ function App() {
               </div>
           }
           <p>Log: {messages}</p>
+        {(gameOverBool && playerCreatedBool) &&
+          <div>
+            <button onClick={handleReady}>Ready up!</button>
+          </div>
+        }
       </div>
   );
 }

@@ -25,12 +25,11 @@ public class DealerFiveCards implements HandIdentifier{
         boolean returnValue = false;
 
         for ( PokerHandTypes pokerHandTypes : player.getPossibleHands() ) {
-            if ( !player.isHandPossible( pokerHandTypes ) ) {
-                continue;
+            if ( player.isHandPossible( pokerHandTypes ) ) {
+                // Needs to return true if only one hand was changed
+                returnValue = this.handIdentifierDistribute.checkHand(
+                        pokerHandTypes, player, dealersHand ) || returnValue;
             }
-
-            // Needs to return true if only one hand was changed
-            returnValue = this.handIdentifierDistribute.checkHand( pokerHandTypes, player, dealersHand ) || returnValue;
         }
 
         return returnValue;
