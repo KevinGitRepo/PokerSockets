@@ -14,7 +14,7 @@ class GameServer{
     private List<Card> dealerCards;
     private int pot;
     private List<Player> players;
-    private List<Player> foldedPlayers;
+    private Set<Player> foldedPlayers;
 
     private List<Player> waitingPlayers;
     private final HandIdentifierManager handIdentifierManager;
@@ -23,6 +23,7 @@ class GameServer{
     private GameState gameState;
     private final Deck deck;
     private int currentPlayerIndex;
+    private boolean roundFold;
 
     public GameServer(){
         this.handConnectorManager = new HandConnectorManager();
@@ -30,9 +31,10 @@ class GameServer{
         this.handIdentifierManager = new HandIdentifierManager(this.handConnectorManager, this.handIdentifierDistribute);
         this.dealerCards = new ArrayList<>();
         this.players = new ArrayList<>();
-        this.foldedPlayers = new ArrayList<>();
+        this.foldedPlayers = new HashSet<>();
         this.waitingPlayers = new ArrayList<>();
         this.gameState = GameState.WAITING;
+        this.roundFold = false;
         this.deck = new Deck();
         this.deck.shuffle();
     }
@@ -84,10 +86,15 @@ class GameServer{
     }
 
     public int playerCount() {
+        if ( roundFold ) {
+            return this.players.size() - this.foldedPlayers.size();
+        }
+
         return this.players.size();
     }
 
     public void newRound() {
+        this.roundFold = false;
         if ( this.dealerCards.isEmpty() ) {
             // Flop
             this.dealerCards.addAll( Arrays.asList( this.deck.dealCard(),
@@ -105,9 +112,9 @@ class GameServer{
     }
 
     public void playerFold() {
-        Player currentPlayer = this.players.remove( this.currentPlayerIndex );
-        this.deck.addCards( currentPlayer.fold() );
-        this.foldedPlayers.add( currentPlayer );
+        this.roundFold = true;
+        this.deck.addCards( this.players.get( this.currentPlayerIndex ).fold() );
+        this.foldedPlayers.add( this.players.get( this.currentPlayerIndex ) );
     }
 
     public void playerCheck() {
@@ -115,11 +122,20 @@ class GameServer{
     }
 
     public void nextPlayer() {
-        this.currentPlayerIndex = ( this.currentPlayerIndex + 1 ) % MAX_PLAYERS;
+
+        // Has to increase the player index before checking loop condition
+        do {
+            this.currentPlayerIndex = (this.currentPlayerIndex + 1) % MAX_PLAYERS;
+        } while (this.foldedPlayers.size() < MAX_PLAYERS &&
+                this.foldedPlayers.contains(this.players.get(this.currentPlayerIndex)));
     }
 
     public Player getCurrentPlayer() {
         return this.players.get( this.currentPlayerIndex );
+    }
+
+    public int getCurrentPlayerIndex() {
+        return this.currentPlayerIndex;
     }
 
     /**
@@ -146,6 +162,7 @@ class GameServer{
         this.dealerCards.clear();
         this.foldedPlayers.clear();
         this.gameState = GameState.WAITING;
+        this.currentPlayerIndex = 0;
         addWaitingPlayers();
         removeCardsFromPlayers();
     }
