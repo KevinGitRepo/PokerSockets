@@ -85,6 +85,10 @@ class GameServer{
         }
     }
 
+    public int getPot() {
+        return this.pot;
+    }
+
     public int playerCount() {
         if ( roundFold ) {
             return this.players.size() - this.foldedPlayers.size();
@@ -107,6 +111,7 @@ class GameServer{
     }
 
     public void playerBet( int amount ) {
+        this.pot += amount;
         players.get( this.currentPlayerIndex ).bet( amount );
         checkPlayerHand(players.get( this.currentPlayerIndex ));
     }
@@ -163,6 +168,7 @@ class GameServer{
         this.foldedPlayers.clear();
         this.gameState = GameState.WAITING;
         this.currentPlayerIndex = 0;
+        this.pot = 0;
         addWaitingPlayers();
         removeCardsFromPlayers();
     }
@@ -185,6 +191,10 @@ class GameServer{
             else if ( player.higherValueThan( winner.getPokerHand() ) ) {
                 winner = player;
             }
+        }
+
+        if ( winner != null ) {
+            winner.win(this.pot);
         }
 
         return winner;

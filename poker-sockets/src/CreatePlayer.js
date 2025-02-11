@@ -11,7 +11,7 @@ export function CreatePlayer(props) {
     };
 
     const createPlayer = () => {
-        const playerData = { name: props.playerName, moneyLimit: props.playerMoney};
+        const playerData = { name: props.playerName, money: props.playerMoney};
         props.setIsPlayerCreated(true);
         props.socket.send(JSON.stringify({action: "create", data: playerData}));
     };
@@ -23,7 +23,7 @@ export function CreatePlayer(props) {
                   <h1>Welcome!</h1>
                   <h2>Please enter your name and money limit:</h2>
                   <input type="text" value={props.playerName} onChange={handleNameChange} placeholder="Enter Player Name"/>
-                  <input type="text" value={props.playerMoney} onChange={handleMoneyLimitChange} placeholder="Enter Your Money Limit"/>
+                  <input type="text" onChange={handleMoneyLimitChange} placeholder="Enter Your Money Limit"/>
                   <button onClick={createPlayer}>Submit</button>
               </div>
           }

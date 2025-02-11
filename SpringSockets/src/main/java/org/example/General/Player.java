@@ -76,11 +76,9 @@ public class Player {
     /**
      * For the player to bet a certain amount of money
      * @param amount number to bet
-     * @return int of amount of money left
      */
-    public int bet(int amount){
+    public void bet(int amount){
         this.moneyLimit -= amount;
-        return this.moneyLimit;
     }
 
     public boolean higherValueThan( PokerHand comparingHand ) {

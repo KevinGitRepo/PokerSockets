@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import {CreatePlayer} from "./CreatePlayer";
+import {Game} from "./Game";
 
 function App() {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState("");
   const [socket, setSocket] = useState(null);
   const [dealersCards, setDealersCards] = useState([]);
   const [playersCards, setPlayersCards] = useState([]);
   const [playerTurnBool, setPlayersTurnBool] = useState(false);
   const [playerCreatedBool, setPlayerCreatedBool] = useState(false);
+  const [pot, setPot] = useState(0);
 
   const [gameOverBool, setGameOverBool] = useState(false);
 
   const [pName, setPName] = useState("");
-  const [moneyLimit, setMoneyLimit] = useState("");
+  const [moneyLimit, setMoneyLimit] = useState(0);
 
   useEffect(() => {
     const localSocket = new WebSocket("ws://localhost:8080/game");
@@ -27,6 +29,14 @@ function App() {
       }
       else if ( event.data.includes( "Your Cards" ) ) {
         setPlayersCards( event.data.substring(event.data.indexOf('[') + 1, event.data.indexOf(']') ) );
+      }
+      else if ( event.data.includes( "Bet Amount" ) ) {
+        setMoneyLimit(
+            parseInt(event.data.substring(event.data.indexOf('(') + 1, event.data.indexOf(')') ) ) );
+      }
+      else if ( event.data.includes("Pot") ) {
+        setPot(
+            parseInt(event.data.substring(event.data.indexOf('(') + 1, event.data.indexOf(')') ) ) );
       }
       else if ( event.data.includes( "won" ) ) {
         setGameOverBool(true);
@@ -51,31 +61,8 @@ function App() {
     return () => localSocket.close();
   }, []);
 
-  const handleSocketSending = (action, message) => {
-    socket.send(JSON.stringify({action: action, data: message}));
-  }
-
-  const changePlayerTurn = () => {
-      setPlayersTurnBool(!playerTurnBool);
-  };
-
-  const handleCheck = () => {
-    setPlayersTurnBool(false);
-    handleSocketSending("check", "");
-  }
-
-  const handleFold = () => {
-    setPlayersTurnBool(false);
-    handleSocketSending("fold", "");
-  }
-
-  const handleBet = () => {
-    setPlayersTurnBool(false);
-    handleSocketSending("bet", 20);
-  }
-
   const handleReady = () => {
-    handleSocketSending("ready", "");
+    socket.send(JSON.stringify({action:"ready", data:""}));
   }
 
   return (
@@ -93,24 +80,19 @@ function App() {
               </div>
           }
 
-          {(playerCreatedBool && playerTurnBool) &&
-              <div>
-                  <h1>Welcome to Poker</h1>
-                  <h3>Dealer's Cards: {dealersCards}</h3>
-                  <h4>Your Cards: {playersCards}</h4>
-                  {playerTurnBool &&
-                      <div>
-                          <button onClick={handleBet}>Bet</button>
-                          <button onClick={handleCheck}>Check</button>
-                          <button onClick={handleFold}>Fold</button>
-                      </div>
-                  }
-                  <p>Current Poker Hand: </p>
-                  <button onClick={changePlayerTurn}>Change Player Turn Bool</button>
-
-              </div>
-          }
+          <Game socket={socket}
+                isPlayerCreated={playerCreatedBool}
+                isPlayerTurn={playerTurnBool}
+                setPlayersTurn={setPlayersTurnBool}
+                dealersCards={dealersCards}
+                playersCards={playersCards}
+                moneyLimit={moneyLimit}
+                setMoneyLimit={setMoneyLimit}
+                setMessages={setMessages}
+                setPot={setPot}/>
           <p>Log: {messages}</p>
+          <p>Pot: ${pot}</p>
+
         {(gameOverBool && playerCreatedBool) &&
           <div>
             <button onClick={handleReady}>Ready up!</button>

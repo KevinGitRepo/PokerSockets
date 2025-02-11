@@ -1,5 +1,6 @@
 package org.example.springsockets;
 
+import org.json.JSONObject;
 import org.example.General.Player;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -7,6 +8,7 @@ import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,41 +35,30 @@ public class MultiWebSocketHandler extends TextWebSocketHandler {
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
         // This is where the actions will be parsed
 
+        JSONObject messageJSON = new JSONObject(message.getPayload().toString());
+        String action = messageJSON.getString("action");
+
+        System.out.println("Action: " + action);
+
+        switch (action) {
+            case "ready":
+                handleReadyCase();
+                break;
+            case "create":
+                handleCreateCase(messageJSON.getJSONObject("data"), session);
+                break;
+            case "bet":
+                handleBet(messageJSON.getInt("data"));
+                break;
+            case "fold":
+                handleFold();
+                break;
+            case "check":
+                handleCheck();
+                break;
+        }
+
         System.out.println("Message: " + message.getPayload());
-
-        if ( message.getPayload().toString().contains( "ready" ) ) {
-            playersReady++;
-
-            if ( playersReady == gameServer.playerCount() && gameOver ) {
-                gameServer.gameStart();
-                gameOver = false;
-                playersReady = 1;
-            }
-        }
-
-        // Creates new player and adds to players map
-        if ( message.getPayload().toString().contains( "create" ) ) {
-            Player receivedPlayer = playerObjectMapper.readValue(message.getPayload().toString(), session);
-
-            players.put( session, receivedPlayer );
-
-            session.sendMessage( new TextMessage( gameServer.addPlayer( receivedPlayer ) ) );
-        }
-
-        else if ( message.getPayload().toString().contains( "bet" ) ) {
-            gameServer.playerBet(30);
-            broadcastToAllPlayers(gameServer.getCurrentPlayer().getName() + " bet $30");
-        }
-
-        else if ( message.getPayload().toString().contains( "fold" ) ) {
-            gameServer.playerFold();
-            broadcastToAllPlayers(gameServer.getCurrentPlayer().getName() + " folded");
-        }
-
-        else if ( message.getPayload().toString().contains( "check" ) ) {
-            gameServer.playerCheck();
-            broadcastToAllPlayers(gameServer.getCurrentPlayer().getName() + " checked");
-        }
 
         // Only run this if game is currently playing
         System.out.println(gameServer.getGameState());
@@ -84,11 +75,46 @@ public class MultiWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    public void sendMessageToPlayer(WebSocketSession session, TextMessage message) throws Exception {
+    private void handleReadyCase() {
+        playersReady++;
+
+        if ( playersReady == gameServer.playerCount() && gameOver ) {
+            gameServer.gameStart();
+            gameOver = false;
+            playersReady = 1;
+        }
+    }
+
+    private void handleCreateCase(JSONObject data, WebSocketSession session) throws IOException {
+        Player receivedPlayer = playerObjectMapper.readValue(data, session);
+
+        players.put( session, receivedPlayer );
+
+        session.sendMessage( new TextMessage( gameServer.addPlayer( receivedPlayer ) ) );
+    }
+
+    private void handleBet(int betAmount) throws IOException {
+        gameServer.playerBet(betAmount);
+
+        broadcastToAllPlayers(gameServer.getCurrentPlayer().getName() + " bet $" + betAmount);
+        broadcastToAllPlayers("Pot: (" + gameServer.getPot() + ")");
+    }
+
+    private void handleFold() throws IOException {
+        gameServer.playerFold();
+        broadcastToAllPlayers(gameServer.getCurrentPlayer().getName() + " folded");
+    }
+
+    private void handleCheck() throws IOException {
+        gameServer.playerCheck();
+        broadcastToAllPlayers(gameServer.getCurrentPlayer().getName() + " checked");
+    }
+
+    public void sendMessageToPlayer(WebSocketSession session, TextMessage message) throws IOException {
         session.sendMessage(message);
     }
 
-    public void playGame() throws Exception {
+    public void playGame() throws IOException {
         System.out.println("Game is In Progress");
         if ( gameServer.playerCount() == playerCountRound && gameServer.getDealerCards().size() == 5 ) {
             Player winner = gameServer.getWinner();
@@ -108,6 +134,7 @@ public class MultiWebSocketHandler extends TextWebSocketHandler {
             }
             gameServer.nextPlayer();
             sendMessageToPlayer(gameServer.getCurrentPlayer().getSession(), new TextMessage("Your Turn"));
+            sendMessageToPlayer(gameServer.getCurrentPlayer().getSession(), new TextMessage("Bet Amount: (" + gameServer.getCurrentPlayer().getMoneyLimit() + ")") );
             sendMessageToPlayer( gameServer.getCurrentPlayer().getSession(),
                     new TextMessage( "Your Cards" + gameServer.getCurrentPlayer().getHand() ) );
             broadcastToAllPlayers(gameServer.getCurrentPlayer() + "'s turn.");
@@ -115,13 +142,13 @@ public class MultiWebSocketHandler extends TextWebSocketHandler {
     }
 
     @Override
-    public void afterConnectionClosed( WebSocketSession session, CloseStatus closeStatus ) throws Exception {
+    public void afterConnectionClosed( WebSocketSession session, CloseStatus closeStatus ) throws IOException {
         gameServer.playerLeft( players.get( session ) );
         players.remove( session );
         System.out.println( "Connection closed: " + session.getId() );
     }
 
-    private void broadcastToAllPlayers( String message ) throws Exception{
+    private void broadcastToAllPlayers( String message ) throws IOException{
         for ( WebSocketSession session : players.keySet() ) {
             session.sendMessage( new TextMessage( message ) );
         }
