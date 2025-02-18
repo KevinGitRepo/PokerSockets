@@ -10,6 +10,7 @@ function App() {
   const [playerTurnBool, setPlayersTurnBool] = useState(false);
   const [playerCreatedBool, setPlayerCreatedBool] = useState(false);
   const [pot, setPot] = useState(0);
+  const [roundBet, setRoundBet] = useState(0);
 
   const [gameOverBool, setGameOverBool] = useState(false);
 
@@ -43,6 +44,9 @@ function App() {
       }
       else if ( event.data.includes( "started" ) ) {
         setGameOverBool(false);
+      }
+      else if ( event.data.includes( "Current Bet" ) ) {
+        setRoundBet(event.data.substring(event.data.indexOf('(') + 1, event.data.indexOf(')') ) );
       }
       setMessages(event.data );
     };
@@ -89,7 +93,8 @@ function App() {
                 moneyLimit={moneyLimit}
                 setMoneyLimit={setMoneyLimit}
                 setMessages={setMessages}
-                setPot={setPot}/>
+                setPot={setPot}
+                roundBet={roundBet}/>
           <p>Log: {messages}</p>
           <p>Pot: ${pot}</p>
 
