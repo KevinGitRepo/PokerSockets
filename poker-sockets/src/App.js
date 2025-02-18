@@ -1,38 +1,104 @@
 import React, { useEffect, useState } from 'react';
-import io from 'socket.io-client';
+import {CreatePlayer} from "./CreatePlayer";
+import {Game} from "./Game";
 
 function App() {
-  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState("");
   const [socket, setSocket] = useState(null);
+  const [dealersCards, setDealersCards] = useState([]);
+  const [playersCards, setPlayersCards] = useState([]);
+  const [playerTurnBool, setPlayersTurnBool] = useState(false);
+  const [playerCreatedBool, setPlayerCreatedBool] = useState(false);
+  const [pot, setPot] = useState(0);
+
+  const [gameOverBool, setGameOverBool] = useState(false);
+
+  const [pName, setPName] = useState("");
+  const [moneyLimit, setMoneyLimit] = useState(0);
 
   useEffect(() => {
-    const localSocket = io('http://localhost:5000');
+    const localSocket = new WebSocket("ws://localhost:8080/game");
 
-    localSocket.on('connect', () => {
-      console.log('Connect to WebSocket');
-    });
-
-    localSocket.on('message', (data) => {
-      setMessage(data);
-    });
+    localSocket.onmessage = (event) => {
+      console.log(event.data);
+      if ( event.data.includes( "Your Turn" ) ) {
+        setPlayersTurnBool(true);
+      }
+      else if ( event.data.includes( "Dealer Cards" ) ) {
+        setDealersCards( event.data.substring(event.data.indexOf('[') + 1, event.data.indexOf(']') ) );
+      }
+      else if ( event.data.includes( "Your Cards" ) ) {
+        setPlayersCards( event.data.substring(event.data.indexOf('[') + 1, event.data.indexOf(']') ) );
+      }
+      else if ( event.data.includes( "Bet Amount" ) ) {
+        setMoneyLimit(
+            parseInt(event.data.substring(event.data.indexOf('(') + 1, event.data.indexOf(')') ) ) );
+      }
+      else if ( event.data.includes("Pot") ) {
+        setPot(
+            parseInt(event.data.substring(event.data.indexOf('(') + 1, event.data.indexOf(')') ) ) );
+      }
+      else if ( event.data.includes( "won" ) ) {
+        setGameOverBool(true);
+      }
+      else if ( event.data.includes( "started" ) ) {
+        setGameOverBool(false);
+      }
+      setMessages(event.data );
+    };
 
     setSocket(localSocket);
 
-    return () => {
-      localSocket.disconnect();
+    localSocket.onopen = () => {
+      console.log("Connected to WebSocket");
     };
+
+    localSocket.onclose = () => {
+      console.log("Websocket closed");
+      setPlayerCreatedBool(false);
+    };
+
+    return () => localSocket.close();
   }, []);
 
-  const sendMessage = () => {
-    socket.emit('message', 'Hello from React!');
-  };
+  const handleReady = () => {
+    socket.send(JSON.stringify({action:"ready", data:""}));
+  }
 
   return (
-    <div>
-      <h1>Socket.IO Communication</h1>
-      <button onClick={sendMessage}>Send Message to Server</button>
-      <p>Message from server: {message}</p>
-    </div>
+      <div>
+          <CreatePlayer isPlayerCreated={playerCreatedBool}
+                        playerName={pName}
+                        playerMoney={moneyLimit}
+                        setPlayerName={setPName}
+                        setPlayerMoney={setMoneyLimit}
+                        setIsPlayerCreated={setPlayerCreatedBool}
+                        socket={socket}/>
+          {(playerCreatedBool && !playerTurnBool) &&
+              <div>
+                <p>Waiting for turn!</p>
+              </div>
+          }
+
+          <Game socket={socket}
+                isPlayerCreated={playerCreatedBool}
+                isPlayerTurn={playerTurnBool}
+                setPlayersTurn={setPlayersTurnBool}
+                dealersCards={dealersCards}
+                playersCards={playersCards}
+                moneyLimit={moneyLimit}
+                setMoneyLimit={setMoneyLimit}
+                setMessages={setMessages}
+                setPot={setPot}/>
+          <p>Log: {messages}</p>
+          <p>Pot: ${pot}</p>
+
+        {(gameOverBool && playerCreatedBool) &&
+          <div>
+            <button onClick={handleReady}>Ready up!</button>
+          </div>
+        }
+      </div>
   );
 }
 
