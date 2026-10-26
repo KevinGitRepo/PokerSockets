@@ -1,4 +1,5 @@
 import React from "react";
+import "./CreatePlayer.css";
 
 export function CreatePlayer(props) {
 
@@ -19,12 +20,12 @@ export function CreatePlayer(props) {
     return (
       <div>
           {!props.isPlayerCreated &&
-              <div>
-                  <h1>Welcome!</h1>
-                  <h2>Please enter your name and money limit:</h2>
-                  <input type="text" value={props.playerName} onChange={handleNameChange} placeholder="Enter Player Name"/>
-                  <input type="text" onChange={handleMoneyLimitChange} placeholder="Enter Your Money Limit"/>
-                  <button onClick={createPlayer}>Submit</button>
+              <div className={"create-player"}>
+                  <h1 className={"create-player-title"}>Welcome!</h1>
+                  <h2 className={"create-player-subtitle"}>Please enter your name and money limit:</h2>
+                  <input className={"create-player-input"} type="text" value={props.playerName} onChange={handleNameChange} placeholder="Enter Player Name"/>
+                  <input className={"create-player-input"} type="text" onChange={handleMoneyLimitChange} placeholder="Enter Your Money Limit"/>
+                  <button className={"create-player-button"} onClick={createPlayer}>Submit</button>
               </div>
           }
       </div>

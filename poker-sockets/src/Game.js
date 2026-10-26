@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import "./Game.css";
 
 export function Game(props) {
 
@@ -42,22 +43,22 @@ export function Game(props) {
     return (
         <div>
             {props.isPlayerCreated &&
-                <div>
-                    <h1>Welcome to Poker</h1>
-                    <h3>Dealer's Cards: {props.dealersCards}</h3>
-                    <h4>Your Cards: {props.playersCards}</h4>
-                    <h5>Bet Amount: {props.moneyLimit}</h5>
+                <div className={"game"}>
+                    <h1 className={"game-title"}>Welcome to Poker</h1>
+                    <h3 className={"game-dealer"}>Dealer's Cards: {props.dealersCards}</h3>
+                    <h4 className={"game-hand"}>Your Cards: {props.playersCards}</h4>
+                    <h5 className={"game-limit"}>Bet Amount: {props.moneyLimit}</h5>
                     {props.isPlayerTurn &&
-                        <div>
-                            <div>
-                                <button onClick={handleBet}>Bet</button>
-                                <input type="number" value={playerBetAmount} onChange={handleOnChangeBet} placeholder="amount"/>
+                        <div className={"game-actions"}>
+                            <div className={"game-bet-row"}>
+                                <button className={"game-button game-button-bet"} onClick={handleBet}>Bet</button>
+                                <input className={"game-input"} type="number" value={playerBetAmount} onChange={handleOnChangeBet} placeholder="amount"/>
                             </div>
                             <div>
-                                <button onClick={handleCheck}>Check</button>
+                                <button className={"game-button game-button-check"} onClick={handleCheck}>Check</button>
                             </div>
                             <div>
-                                <button onClick={handleFold}>Fold</button>
+                                <button className={"game-button game-button-fold"} onClick={handleFold}>Fold</button>
                             </div>
 
                         </div>

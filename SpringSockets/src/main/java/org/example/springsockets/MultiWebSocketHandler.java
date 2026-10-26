@@ -133,7 +133,7 @@ public class MultiWebSocketHandler extends TextWebSocketHandler {
         // Needs to send everyone in the game updates for "moves"
         broadcastToAllPlayers( gameServer.getCurrentPlayer().getName() + " bet $" + betAmount );
         broadcastToAllPlayers( "Pot: (" + gameServer.getPot() + ")" );
-        broadcastToAllPlayers( "Bet Amount: (" + betAmount + ")" );
+        broadcastToAllPlayers( "Current Bet: (" + betAmount + ")" );
     }
 
     /**
@@ -224,9 +224,13 @@ public class MultiWebSocketHandler extends TextWebSocketHandler {
      */
     @Override
     public void afterConnectionClosed( WebSocketSession session, CloseStatus closeStatus ) throws IOException {
-        gameServer.playerLeft( players.get( session ) );
-        players.remove( session );
-        System.out.println( "Connection closed: " + session.getId() );
+        Player playerWhoLeft = players.get( session );
+        if ( playerWhoLeft != null ) {
+            gameServer.playerLeft( playerWhoLeft );
+            players.remove( session );
+            System.out.println( "Connection closed: " + session.getId() );
+        }
+
     }
 
     /**

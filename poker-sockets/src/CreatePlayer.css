@@ -1,0 +1,124 @@
+.create-player {
+    --felt: #1c3a2d;
+    --felt-deep: #12261d;
+    --brass: #c8a24a;
+    --brass-bright: #dcb95f;
+    --ivory: #f2ecd9;
+    --ivory-muted: rgba(242, 236, 217, 0.68);
+
+    box-sizing: border-box;
+    width: min(420px, calc(100% - 32px));
+    margin: 64px auto 32px;
+    padding: 44px 40px 40px;
+    background: var(--felt);
+    color: var(--ivory);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    border-radius: 14px;
+    /* inset stitched rail, like the edge of a card table */
+    box-shadow:
+            inset 0 0 0 8px var(--felt),
+            inset 0 0 0 9px rgba(200, 162, 74, 0.55),
+            0 18px 40px rgba(0, 0, 0, 0.28);
+}
+
+.create-player *,
+.create-player *::before,
+.create-player *::after {
+    box-sizing: border-box;
+}
+
+.create-player-title {
+    margin: 0 0 8px;
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+    font-size: 2.4rem;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    text-align: center;
+    color: var(--ivory);
+}
+
+.create-player-subtitle {
+    margin: 0 0 28px;
+    font-size: 0.95rem;
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: center;
+    color: var(--ivory-muted);
+}
+
+.create-player-input {
+    display: block;
+    width: 100%;
+    margin: 0 0 14px;
+    padding: 13px 16px;
+    font: inherit;
+    font-size: 1rem;
+    color: var(--ivory);
+    background: var(--felt-deep);
+    border: 1px solid rgba(200, 162, 74, 0.35);
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.create-player-input::placeholder {
+    color: rgba(242, 236, 217, 0.42);
+}
+
+.create-player-input:hover {
+    border-color: rgba(200, 162, 74, 0.6);
+}
+
+.create-player-input:focus-visible {
+    border-color: var(--brass-bright);
+    box-shadow: 0 0 0 3px rgba(220, 185, 95, 0.28);
+}
+
+.create-player-button {
+    display: block;
+    width: 100%;
+    margin-top: 22px;
+    padding: 14px 16px;
+    font: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--felt-deep);
+    background: var(--brass);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.create-player-button:hover {
+    background: var(--brass-bright);
+}
+
+.create-player-button:active {
+    transform: translateY(1px);
+}
+
+.create-player-button:focus-visible {
+    outline: 2px solid var(--ivory);
+    outline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+    .create-player {
+        margin-top: 32px;
+        padding: 36px 24px 28px;
+    }
+
+    .create-player-title {
+        font-size: 2rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .create-player-input,
+    .create-player-button {
+        transition: none;
+    }
+}

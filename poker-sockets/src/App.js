@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {CreatePlayer} from "./CreatePlayer";
 import {Game} from "./Game";
+import "./App.css";
 
 function App() {
   const [messages, setMessages] = useState("");
@@ -62,7 +63,9 @@ function App() {
       setPlayerCreatedBool(false);
     };
 
-    return () => localSocket.close();
+    return () => {
+      if (localSocket) localSocket.close();
+    }
   }, []);
 
   const handleReady = () => {
@@ -70,7 +73,7 @@ function App() {
   }
 
   return (
-      <div>
+      <div className={"app"}>
           <CreatePlayer isPlayerCreated={playerCreatedBool}
                         playerName={pName}
                         playerMoney={moneyLimit}
@@ -79,8 +82,8 @@ function App() {
                         setIsPlayerCreated={setPlayerCreatedBool}
                         socket={socket}/>
           {(playerCreatedBool && !playerTurnBool) &&
-              <div>
-                <p>Waiting for turn!</p>
+              <div className={"app-waiting"}>
+                <p className={"app-waiting-text"}>Waiting for turn!</p>
               </div>
           }
 
@@ -95,12 +98,12 @@ function App() {
                 setMessages={setMessages}
                 setPot={setPot}
                 roundBet={roundBet}/>
-          <p>Log: {messages}</p>
-          <p>Pot: ${pot}</p>
+          <p className={"app-log"}>Log: {messages}</p>
+          <p className={"app-pot"}>Pot: ${pot}</p>
 
         {(gameOverBool && playerCreatedBool) &&
-          <div>
-            <button onClick={handleReady}>Ready up!</button>
+          <div className={"app-ready"}>
+            <button className={"app-ready-button"} onClick={handleReady}>Ready up!</button>
           </div>
         }
       </div>

@@ -1,38 +1,148 @@
-.App {
+body {
+  margin: 0;
+  background: #0c1712;
+}
+
+.app {
+  --felt-deep: #12261d;
+  --brass: #c8a24a;
+  --brass-bright: #dcb95f;
+  --ivory: #f2ecd9;
+  --ivory-muted: rgba(242, 236, 217, 0.68);
+
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding-bottom: 56px;
+  color: var(--ivory);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+}
+
+.app *,
+.app *::before,
+.app *::after {
+  box-sizing: border-box;
+}
+
+/* Everything below the table card shares its column width */
+.app-waiting,
+.app-log,
+.app-pot,
+.app-ready {
+  width: min(520px, calc(100% - 32px));
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Hide the log and pot while the sign-in card is showing */
+.app:has(.create-player) .app-log,
+.app:has(.create-player) .app-pot {
+  display: none;
+}
+
+/* Waiting for turn: sits above the table card without shifting it
+   when the action buttons appear (24 + 24 + 16 = the card's normal 64px top margin) */
+.app-waiting {
+  height: 24px;
+  margin-top: 24px;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.app-waiting + div .game {
+  margin-top: 16px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+.app-waiting-text {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 24px;
+  color: var(--ivory-muted);
+}
+
+.app-waiting-text::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background: var(--brass);
+  animation: app-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes app-pulse {
+  0%, 100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.app-log {
+  margin-top: 16px;
+  margin-bottom: 0;
+  padding: 12px 16px;
+  min-height: 46px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  color: var(--ivory-muted);
+  background: rgba(255, 255, 255, 0.04);
+  border-left: 2px solid var(--brass);
+  border-radius: 0 8px 8px 0;
 }
 
-.App-link {
-  color: #61dafb;
+.app-pot {
+  margin-top: 20px;
+  margin-bottom: 0;
+  text-align: center;
+  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+  font-size: 1.7rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--brass-bright);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.app-ready {
+  margin-top: 20px;
+}
+
+.app-ready-button {
+  display: block;
+  width: 100%;
+  padding: 14px 16px;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--felt-deep);
+  background: var(--brass);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.app-ready-button:hover {
+  background: var(--brass-bright);
+}
+
+.app-ready-button:active {
+  transform: translateY(1px);
+}
+
+.app-ready-button:focus-visible {
+  outline: 2px solid var(--ivory);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-waiting-text::before {
+    animation: none;
+    opacity: 1;
   }
-  to {
-    transform: rotate(360deg);
+
+  .app-ready-button {
+    transition: none;
   }
 }
